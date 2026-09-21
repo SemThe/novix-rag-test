@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+data/vectorstore.json
+data/generated/
+*.log
+.DS_Store

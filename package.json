@@ -1,0 +1,25 @@
+{
+  "name": "novix-rag-test",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Prototype RAG pipeline for Novix backoffice: ingest sources, retrieve grounded fragments, and generate reviewable content opdrachten.",
+  "type": "module",
+  "scripts": {
+    "ingest": "tsx src/cli.ts ingest",
+    "generate": "tsx src/cli.ts generate",
+    "review": "tsx src/cli.ts review",
+    "stats": "tsx src/cli.ts stats"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@huggingface/transformers": "^4.3.0",
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.5",
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.3"
+  }
+}
