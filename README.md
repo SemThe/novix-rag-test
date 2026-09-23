@@ -63,8 +63,10 @@ Ontwerpkeuzes die direct uit het advies in §6 van het blueprint komen:
     verplichte tool call per opdrachtType zodat de output altijd gestructureerd is. Kost
     geld per call, beste kwaliteit en betrouwbaarheid.
   - `ollama` (`src/llm/ollama.ts`) — lokaal model via [Ollama](https://ollama.com)
-    (standaard `qwen2.5:7b-instruct`), JSON-gedwongen via Ollama's `format: "json"`.
-    Gratis en offline, maar een 7B-model volgt instructies minder betrouwbaar dan Claude.
+    (`qwen2.5:7b-instruct` als lichte default, `qwen2.5:14b-instruct` als je 16GB+ RAM
+    hebt — zie Setup hieronder), JSON-gedwongen via Ollama's `format: "json"`. Gratis en
+    offline, maar een lokaal model volgt instructies minder betrouwbaar dan Claude
+    (14b is hierin merkbaar beter dan 7b, maar geen vervanging voor Claude's niveau).
     Twee dingen die daardoor misgingen bij het testen, en nu programmatisch (niet alleen
     via de prompt) opgevangen worden:
     - het model citeerde soms een net verkeerd chunk-id, of liet een verplicht veld weg;
@@ -127,10 +129,12 @@ Kies daarna één van de twee generatie-providers in `.env`:
 **Optie A — lokaal met Ollama (gratis, geen account nodig)**
 ```bash
 brew install ollama        # of download van https://ollama.com
-ollama pull qwen2.5:7b-instruct   # ~4,7 GB, eenmalig
+ollama pull qwen2.5:7b-instruct   # ~4,7 GB, eenmalig — lichtste optie
+# Of, met 16GB+ RAM, voor merkbaar betere/samenhangender vragen (wel trager):
+ollama pull qwen2.5:14b-instruct   # ~9 GB, eenmalig
 ```
 Ollama draait daarna vanzelf op de achtergrond (`http://localhost:11434`). Zet in `.env`:
-`GENERATION_PROVIDER=ollama`.
+`GENERATION_PROVIDER=ollama` en `OLLAMA_MODEL` op het model dat je gepulld hebt.
 
 **Optie B — Claude via de Anthropic API (beste kwaliteit, betaald)**
 ```bash
