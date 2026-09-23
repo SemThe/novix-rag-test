@@ -87,39 +87,50 @@ export const OPDRACHT_SPECS: Record<OpdrachtType, OpdrachtSpec> = {
       "Maak één meerkeuzevraag: 4 antwoordopties (één correct, drie afleiders) en een korte " +
       "toelichting op het juiste antwoord. Volg deze regels, gebaseerd op hoe goede " +
       "meerkeuzevragen worden geschreven:\n\n" +
-      "1. STEM (de vraag zelf) moet één concreet, ondubbelzinnig probleem stellen dat je kunt " +
+      "1. ONDERWERP — de vraag moet gaan over een concreet FEIT of een concrete GEBEURTENIS: " +
+      "wie deed wat, wanneer, waar, hoeveel, wie versloeg wie, welke regel geldt, wat is het " +
+      "expliciet genoemde gevolg van iets. VERMIJD ALTIJD vragen over emoties, gevoelens, " +
+      "thema's, symboliek, motivatie of interpretatie ('hoe voelt [personage] zich over...', " +
+      "'wat symboliseert...', 'wat vertegenwoordigt...', 'waarom is [thema] belangrijk voor...', " +
+      "'wat betekent [gebeurtenis] voor de relatie tussen...'). Zulke vragen zijn subjectief en " +
+      "kunnen door verschillende mensen anders beantwoord worden, zelfs als de bron er woorden " +
+      "aan wijdt — een quizvraag moet één objectief controleerbaar antwoord hebben, geen " +
+      "interpretatie. Twijfel je of iets een feit of een interpretatie is: kies een ander, " +
+      "harder feit uit dezelfde fragmenten in plaats van de vraag toch te stellen.\n\n" +
+      "2. STEM (de vraag zelf) moet één concreet, ondubbelzinnig probleem stellen dat je kunt " +
       "beantwoorden zonder de opties te zien. Geen vage formuleringen als 'wat volgt het meest " +
       "logisch uit...' of 'wat is het meest waarschijnlijke gevolg...' — dat soort vragen " +
       "vraagt om een voorspelling of mening, niet om een feit, en heeft bij verhalende bronnen " +
       "vaak geen eenduidig juist antwoord. Vraag in plaats daarvan naar iets dat de bron " +
-      "daadwerkelijk stelt: wat er gebeurde, waarom iemand iets deed, hoe twee dingen zich tot " +
-      "elkaar verhouden, wat een vergelijking oplevert. Begrip/inzicht testen mag best (dus niet " +
-      "alleen letterlijke herkenning van één zin), zolang het antwoord nog steeds een feit is " +
-      "dat de bron expliciet ondersteunt — geen giswerk over iets dat de bron openlaat.\n\n" +
-      "2. Het JUISTE ANTWOORD moet ondubbelzinnig en verdedigbaar zijn vanuit de fragmenten, " +
+      "daadwerkelijk als feit stelt.\n\n" +
+      "3. Het JUISTE ANTWOORD moet ondubbelzinnig en verdedigbaar zijn vanuit de fragmenten, " +
       "zonder interpretatieruimte.\n\n" +
-      "3. AFLEIDERS moeten qua vorm, lengte en stijl op elkaar en op het juiste antwoord lijken " +
+      "4. AFLEIDERS moeten qua vorm, lengte en stijl op elkaar en op het juiste antwoord lijken " +
       "(dus niet: drie korte afleiders en één lang correct antwoord, of andersom — dat verklapt " +
       "het antwoord). Ze moeten plausibel klinken voor iemand die de bron niet goed kent, maar " +
       "aantoonbaar onjuist zijn voor wie de bron wel kent. Gebruik bij voorkeur andere concrete " +
       "elementen uit dezelfde fragmenten als afleider-materiaal (bv. een ander personage, een " +
       "ander jaartal, een andere gebeurtenis), niet iets volledig verzonnens.\n\n" +
-      "Slecht voorbeeld (vaag, giswerk, geen eenduidig antwoord — vermijd dit type vraag): " +
-      "\"Welke situatie volgt het meest logisch uit de gebeurtenissen bij Winterfell?\" met opties " +
-      "die allemaal speculatie zijn over een niet-vastgelegde toekomst.\n\n" +
-      "Goed voorbeeld (concreet, eenduidig, homogene afleiders, ter illustratie van de stijl): " +
-      "\"Wat is volgens de Wet toekomst pensioenen het belangrijkste verschil in premieheffing " +
-      "tussen het oude en het nieuwe pensioenstelsel?\", met opties: A) Premies zijn in het " +
-      "nieuwe stelsel leeftijdsonafhankelijk, B) Premies zijn in het nieuwe stelsel juist hoger " +
-      "voor oudere werknemers, C) Premies worden in het nieuwe stelsel per beroepsgroep " +
-      "vastgesteld, D) Premies vervallen volledig in het nieuwe stelsel — vier opties die qua " +
-      "vorm gelijk zijn, over hetzelfde onderwerp gaan, en waarvan er maar één daadwerkelijk in " +
-      "de bron staat.",
+      "Slechte voorbeelden (vermijd dit type vraag):\n" +
+      "- Emotie/interpretatie: \"Hoe voelt Sansa zich over haar huwelijk met Ramsay?\" of \"Wat " +
+      "symboliseren de dragons voor Daenerys?\" — subjectief, geen objectief juist antwoord.\n" +
+      "- Vaag/speculatief: \"Welke situatie volgt het meest logisch uit de gebeurtenissen bij " +
+      "Winterfell?\" met opties die allemaal speculatie zijn over een niet-vastgelegde toekomst.\n\n" +
+      "Goede voorbeelden (concreet feit, eenduidig, homogene afleiders):\n" +
+      "- \"In welke episode wordt Ned Stark onthoofd in opdracht van Joffrey?\", met vier " +
+      "episodetitels als opties.\n" +
+      "- \"Wat is volgens de Wet toekomst pensioenen het belangrijkste verschil in " +
+      "premieheffing tussen het oude en het nieuwe pensioenstelsel?\", met opties: A) Premies " +
+      "zijn in het nieuwe stelsel leeftijdsonafhankelijk, B) Premies zijn in het nieuwe stelsel " +
+      "juist hoger voor oudere werknemers, C) Premies worden in het nieuwe stelsel per " +
+      "beroepsgroep vastgesteld, D) Premies vervallen volledig in het nieuwe stelsel — vier " +
+      "opties die qua vorm gelijk zijn, over hetzelfde onderwerp gaan, en waarvan er maar één " +
+      "daadwerkelijk in de bron staat.",
     toolDescription:
       "Lever een quizvraag aan: een meerkeuzevraag met 4 opties en een toelichting, uitsluitend gebaseerd op de meegegeven brondocumenten.",
     schemaDescription: `{
   "grounded": true,
-  "question": "de vraag — test begrip/inzicht, geen letterlijke herkenning",
+  "question": "de vraag — over een concreet feit/gebeurtenis (wie/wat/wanneer/waar/hoeveel), NOOIT over emotie, thema of interpretatie",
   "options": ["optie A", "optie B", "optie C", "optie D"],
   "correctIndex": 0,
   "explanation": "korte toelichting waarom dit antwoord klopt, met verwijzing naar de bron"

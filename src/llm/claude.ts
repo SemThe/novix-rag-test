@@ -50,7 +50,11 @@ function buildTool(opdrachtType: OpdrachtType) {
         : {
             question: {
               type: "string",
-              description: "De vraag — test begrip/inzicht (vergelijking, oorzaak-gevolg, toepassing), geen letterlijke herkenning van een bronzin.",
+              description:
+                "De vraag — over een concreet feit of gebeurtenis (wie/wat/wanneer/waar/hoeveel), niet zomaar " +
+                "letterlijke herkenning van een bronzin, maar OOK NOOIT over emotie, gevoel, thema, symboliek " +
+                "of interpretatie (bv. 'hoe voelt X zich', 'wat symboliseert Y') — dat is subjectief en heeft " +
+                "geen objectief juist antwoord.",
             },
             options: { type: "array", items: { type: "string" }, description: "Exact 4 antwoordopties." },
             correctIndex: { type: "integer", description: "Index (0-3) van het juiste antwoord in 'options'." },
