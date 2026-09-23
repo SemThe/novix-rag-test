@@ -74,18 +74,22 @@ cp .env.example .env
 # 1. Bronnen inlezen, chunken, embedden
 npm run ingest
 
-# 2. Een digest-artifact genereren, gegrond in retrieval
+# 2. Retrieval alleen testen (geen API-key nodig, draait volledig lokaal)
+npm run search -- "het pensioenstelsel"
+npm run search -- "AOW" --source-type encyclopedisch
+
+# 3. Een digest-artifact genereren, gegrond in retrieval (heeft ANTHROPIC_API_KEY nodig)
 npm run generate -- "het nieuwe pensioenstelsel"
 npm run generate -- "AOW" --source-type encyclopedisch
 npm run generate -- "pensioenakkoord" --since 2024-01-01
 
-# 3. Reviewwachtrij bekijken en afhandelen (niets is live totdat dit gebeurt)
+# 4. Reviewwachtrij bekijken en afhandelen (niets is live totdat dit gebeurt)
 npm run review -- list
 npm run review -- approve <id>
 npm run review -- approve <id> --edited
 npm run review -- reject <id> --reason "feitelijk onjuist"
 
-# 4. Kwaliteitsstatistieken
+# 5. Kwaliteitsstatistieken
 npm run stats
 ```
 

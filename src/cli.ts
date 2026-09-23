@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { Command } from "commander";
 import { ingestAll } from "./ingest.js";
+import { retrieve } from "./retrieve.js";
 import { generateDigestArtifact } from "./generate.js";
 import { listPending, listAll, approve, reject } from "./review.js";
 
@@ -16,6 +17,29 @@ program
     console.log(
       `Klaar: ${result.sources} bron(nen) verwerkt, ${result.skippedExpired} verlopen overgeslagen, ${result.chunks} chunk(s) in de vectorstore.`
     );
+  });
+
+program
+  .command("search")
+  .description("Test alleen retrieval (embedding + zoeken) — draait volledig lokaal, geen API-key nodig")
+  .argument("<query>", "zoekopdracht, bv. \"het pensioenstelsel\"")
+  .option("--top-k <n>", "aantal fragmenten om op te halen", "5")
+  .option("--source-type <type>", "filter op brontype")
+  .option("--since <date>", "alleen bronnen gepubliceerd na deze datum (YYYY-MM-DD)")
+  .action(async (query: string, options) => {
+    const results = await retrieve(query, {
+      topK: Number(options.topK),
+      sourceType: options.sourceType,
+      sinceDate: options.since,
+    });
+    if (results.length === 0) {
+      console.log("Geen (niet-verlopen) fragmenten gevonden. Draai eerst 'npm run ingest'.");
+      return;
+    }
+    for (const r of results) {
+      console.log(`\n[${r.id}] score ${r.score.toFixed(3)} — "${r.sourceTitle}" (${r.sourceType}, ${r.publicationDate})`);
+      console.log(`  ${r.text.slice(0, 200).replace(/\s+/g, " ")}...`);
+    }
   });
 
 program

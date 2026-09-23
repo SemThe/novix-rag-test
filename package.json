@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "ingest": "tsx src/cli.ts ingest",
+    "search": "tsx src/cli.ts search",
     "generate": "tsx src/cli.ts generate",
     "review": "tsx src/cli.ts review",
     "stats": "tsx src/cli.ts stats"
