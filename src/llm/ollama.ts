@@ -1,32 +1,59 @@
 import { OLLAMA_BASE_URL, OLLAMA_MODEL } from "../config.js";
-import { buildContext, DIGEST_ARTIFACT_SYSTEM_PROMPT } from "./promptContext.js";
+import { BASE_SYSTEM_PROMPT, buildContext, OPDRACHT_SPECS } from "./promptContext.js";
 import type { DigestArtifactResult, LLMProvider } from "./types.js";
-import type { RetrievedChunk } from "../types.js";
+import type { OpdrachtType, RetrievedChunk } from "../types.js";
 
-const JSON_SCHEMA_INSTRUCTIONS = `Antwoord UITSLUITEND met een geldig JSON-object, zonder uitleg eromheen, met exact deze velden:
-{
-  "title": "korte titel",
-  "oneSentenceSummary": "de kern in één zin",
-  "body": "het uitlegstuk, 100-200 woorden, uitsluitend gebaseerd op de bronfragmenten",
-  "citations": ["de chunk-id's die je daadwerkelijk gebruikt hebt, bv. \\"bron-1#0\\" — ZONDER blokhaken eromheen"]
-}`;
+function schemaInstructions(opdrachtType: OpdrachtType): string {
+  const spec = OPDRACHT_SPECS[opdrachtType];
+  return `Antwoord UITSLUITEND met een geldig JSON-object, zonder uitleg eromheen, met exact deze velden (plus "citations"):
+${spec.schemaDescription.replace(/}\s*$/, `,\n  "citations": ["de chunk-id's die je daadwerkelijk gebruikt hebt, bv. \\"bron-1#0\\" — ZONDER blokhaken eromheen"]\n}`)}`;
+}
 
-function isDigestArtifactResult(value: unknown): value is DigestArtifactResult {
-  if (!value || typeof value !== "object") return false;
-  const v = value as Record<string, unknown>;
+function isNonEmptyRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function isValidResult(opdrachtType: OpdrachtType, value: unknown): value is DigestArtifactResult {
+  if (!isNonEmptyRecord(value)) return false;
+  if (!Array.isArray(value.citations) || !value.citations.every((c) => typeof c === "string")) return false;
+
+  if (opdrachtType === "digest-artifact") {
+    return typeof value.title === "string" && typeof value.oneSentenceSummary === "string" && typeof value.body === "string";
+  }
+  if (opdrachtType === "trivia") {
+    return typeof value.title === "string" && typeof value.fact === "string";
+  }
+  // quiz
   return (
-    typeof v.title === "string" &&
-    typeof v.oneSentenceSummary === "string" &&
-    typeof v.body === "string" &&
-    Array.isArray(v.citations) &&
-    v.citations.every((c) => typeof c === "string")
+    typeof value.question === "string" &&
+    Array.isArray(value.options) &&
+    value.options.length === 4 &&
+    value.options.every((o) => typeof o === "string") &&
+    typeof value.correctIndex === "number" &&
+    typeof value.explanation === "string"
   );
 }
 
 export class OllamaProvider implements LLMProvider {
   name = "ollama";
 
-  async generateDigestArtifact(topic: string, chunks: RetrievedChunk[]): Promise<DigestArtifactResult> {
+  async generate(
+    opdrachtType: OpdrachtType,
+    topic: string,
+    instructions: string | undefined,
+    chunks: RetrievedChunk[]
+  ): Promise<DigestArtifactResult> {
+    const spec = OPDRACHT_SPECS[opdrachtType];
+
+    const userPrompt = [
+      `Opdracht: ${spec.instructions}`,
+      `Onderwerp: "${topic}"`,
+      instructions ? `Extra instructies van de redacteur: ${instructions}` : null,
+      `Beschikbare brondocumenten:\n\n${buildContext(chunks)}`,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+
     const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -35,11 +62,8 @@ export class OllamaProvider implements LLMProvider {
         stream: false,
         format: "json",
         messages: [
-          { role: "system", content: `${DIGEST_ARTIFACT_SYSTEM_PROMPT}\n\n${JSON_SCHEMA_INSTRUCTIONS}` },
-          {
-            role: "user",
-            content: `Onderwerp/opdracht: "${topic}"\n\nBeschikbare brondocumenten:\n\n${buildContext(chunks)}`,
-          },
+          { role: "system", content: `${BASE_SYSTEM_PROMPT}\n\n${schemaInstructions(opdrachtType)}` },
+          { role: "user", content: userPrompt },
         ],
       }),
     }).catch((err) => {
@@ -66,7 +90,7 @@ export class OllamaProvider implements LLMProvider {
       throw new Error(`Ollama-output is geen geldige JSON: ${raw.slice(0, 300)}`);
     }
 
-    if (!isDigestArtifactResult(parsed)) {
+    if (!isValidResult(opdrachtType, parsed)) {
       throw new Error(
         `Ollama-output mist verplichte velden of heeft het verkeerde type: ${JSON.stringify(parsed).slice(0, 300)}`
       );

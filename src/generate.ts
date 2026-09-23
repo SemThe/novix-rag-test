@@ -4,11 +4,34 @@ import { randomUUID } from "node:crypto";
 import { CLAUDE_MODEL, GENERATED_DIR, OLLAMA_MODEL, PROMPT_VERSION } from "./config.js";
 import { retrieve } from "./retrieve.js";
 import { getProvider } from "./llm/index.js";
-import type { GeneratedItem } from "./types.js";
+import type { GeneratedContent, GeneratedItem, OpdrachtType } from "./types.js";
 
-export async function generateDigestArtifact(
+function extractContent(opdrachtType: OpdrachtType, raw: Record<string, unknown>): GeneratedContent {
+  if (opdrachtType === "digest-artifact") {
+    return { title: raw.title as string, oneSentenceSummary: raw.oneSentenceSummary as string, body: raw.body as string };
+  }
+  if (opdrachtType === "trivia") {
+    return { title: raw.title as string, fact: raw.fact as string };
+  }
+  return {
+    question: raw.question as string,
+    options: raw.options as string[],
+    correctIndex: raw.correctIndex as number,
+    explanation: raw.explanation as string,
+  };
+}
+
+export async function generateContent(
+  opdrachtType: OpdrachtType,
   topic: string,
-  opts: { topK?: number; sourceType?: string; sinceDate?: string; minScore?: number; provider?: string } = {}
+  opts: {
+    instructions?: string;
+    topK?: number;
+    sourceType?: string;
+    sinceDate?: string;
+    minScore?: number;
+    provider?: string;
+  } = {}
 ): Promise<GeneratedItem> {
   const chunks = await retrieve(topic, opts);
   if (chunks.length === 0) {
@@ -18,10 +41,10 @@ export async function generateDigestArtifact(
   }
 
   const provider = getProvider(opts.provider);
-  const result = await provider.generateDigestArtifact(topic, chunks);
+  const raw = await provider.generate(opdrachtType, topic, opts.instructions, chunks);
 
   const retrievedIds = new Set(chunks.map((c) => c.id));
-  const validCitationIds = (result.citations ?? []).filter((id) => retrievedIds.has(id));
+  const validCitationIds = (raw.citations ?? []).filter((id) => retrievedIds.has(id));
 
   if (validCitationIds.length === 0) {
     throw new Error(
@@ -32,21 +55,19 @@ export async function generateDigestArtifact(
 
   const citations = validCitationIds.map((chunkId) => {
     const chunk = chunks.find((c) => c.id === chunkId)!;
-    return { chunkId, sourceId: chunk.sourceId, sourceTitle: chunk.sourceTitle };
+    return { chunkId, sourceId: chunk.sourceId, sourceTitle: chunk.sourceTitle, text: chunk.text };
   });
 
   const item: GeneratedItem = {
     id: randomUUID(),
-    opdrachtType: "digest-artifact",
+    opdrachtType,
     topic,
     promptVersion: PROMPT_VERSION,
     model: `${provider.name}:${provider.name === "ollama" ? OLLAMA_MODEL : CLAUDE_MODEL}`,
     generatedAt: new Date().toISOString(),
     retrievedChunkIds: chunks.map((c) => c.id),
     citations,
-    title: result.title,
-    oneSentenceSummary: result.oneSentenceSummary,
-    body: result.body,
+    content: extractContent(opdrachtType, raw),
     status: "pending_review",
   };
 

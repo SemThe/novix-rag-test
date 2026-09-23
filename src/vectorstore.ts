@@ -31,6 +31,12 @@ export class VectorStore {
     return this.chunks.length;
   }
 
+  countBySource(): Map<string, number> {
+    const counts = new Map<string, number>();
+    for (const c of this.chunks) counts.set(c.sourceId, (counts.get(c.sourceId) ?? 0) + 1);
+    return counts;
+  }
+
   /**
    * Semantisch zoeken met verplichte vervaldatum-filtering (blueprint 3.1/3.4):
    * verlopen bronnen wegen nooit mee in retrieval.

@@ -2,8 +2,9 @@
 import { Command } from "commander";
 import { ingestAll } from "./ingest.js";
 import { retrieve } from "./retrieve.js";
-import { generateDigestArtifact } from "./generate.js";
+import { generateContent } from "./generate.js";
 import { listPending, listAll, approve, reject } from "./review.js";
+import type { DigestArtifactContent, OpdrachtType, QuizContent, TriviaContent } from "./types.js";
 
 const program = new Command();
 program.name("novix-rag").description("Prototype RAG-pijplijn voor de Novix backoffice");
@@ -46,25 +47,40 @@ program
 
 program
   .command("generate")
-  .description("Genereer een digest-artifact, gegrond in retrieval (opdracht type per blueprint advies 6.7)")
+  .description("Genereer content, gegrond in retrieval")
   .argument("<topic>", "onderwerp/opdracht, bv. \"het pensioenstelsel\"")
+  .option("--type <type>", "digest-artifact | trivia | quiz", "digest-artifact")
+  .option("--instructions <text>", "extra vrije-tekst instructies voor het model")
   .option("--top-k <n>", "aantal fragmenten om op te halen", "5")
   .option("--source-type <type>", "filter op brontype")
   .option("--since <date>", "alleen bronnen gepubliceerd na deze datum (YYYY-MM-DD)")
   .option("--min-score <n>", "minimale cosine-similarity om mee te tellen (0-1)")
   .option("--provider <provider>", "\"claude\" of \"ollama\" (overschrijft GENERATION_PROVIDER uit .env)")
   .action(async (topic: string, options) => {
-    const item = await generateDigestArtifact(topic, {
+    const item = await generateContent(options.type as OpdrachtType, topic, {
+      instructions: options.instructions,
       topK: Number(options.topK),
       sourceType: options.sourceType,
       sinceDate: options.since,
       minScore: options.minScore !== undefined ? Number(options.minScore) : undefined,
       provider: options.provider,
     });
-    console.log(`\nGegenereerd (status: ${item.status}, id: ${item.id})\n`);
-    console.log(`Titel: ${item.title}`);
-    console.log(`In één zin: ${item.oneSentenceSummary}\n`);
-    console.log(item.body);
+    console.log(`\nGegenereerd (type: ${item.opdrachtType}, status: ${item.status}, id: ${item.id})\n`);
+    if (item.opdrachtType === "digest-artifact") {
+      const c = item.content as DigestArtifactContent;
+      console.log(`Titel: ${c.title}`);
+      console.log(`In één zin: ${c.oneSentenceSummary}\n`);
+      console.log(c.body);
+    } else if (item.opdrachtType === "trivia") {
+      const c = item.content as TriviaContent;
+      console.log(`Titel: ${c.title}`);
+      console.log(c.fact);
+    } else {
+      const c = item.content as QuizContent;
+      console.log(c.question);
+      c.options.forEach((o, i) => console.log(`  ${i === c.correctIndex ? "✓" : " "} ${o}`));
+      console.log(`\nToelichting: ${c.explanation}`);
+    }
     console.log(`\nCitaties: ${item.citations.map((c) => `${c.chunkId} (${c.sourceTitle})`).join(", ")}`);
     console.log(`\nNiets is live: dit item staat in de reviewwachtrij. Gebruik 'npm run review -- list'.`);
   });
@@ -81,8 +97,7 @@ review
       return;
     }
     for (const item of items) {
-      console.log(`\n[${item.id}] ${item.title} (${item.topic})`);
-      console.log(`  ${item.oneSentenceSummary}`);
+      console.log(`\n[${item.id}] (${item.opdrachtType}) ${item.topic}`);
       console.log(`  Bronnen: ${item.citations.map((c) => c.sourceTitle).join(", ")}`);
     }
   });
@@ -93,7 +108,7 @@ review
   .option("--edited", "markeer als goedgekeurd na bewerking (voor de goedkeuringsstatistiek)", false)
   .action(async (id: string, options) => {
     const item = await approve(id, options.edited);
-    console.log(`Goedgekeurd: ${item.title} (status: ${item.status})`);
+    console.log(`Goedgekeurd: ${item.id} (status: ${item.status})`);
   });
 
 review
@@ -102,7 +117,7 @@ review
   .requiredOption("--reason <reason>", "reden voor afwijzing, bv. \"feitelijk onjuist\"")
   .action(async (id: string, options) => {
     const item = await reject(id, options.reason);
-    console.log(`Afgewezen: ${item.title} (reden: ${item.rejectionReason})`);
+    console.log(`Afgewezen: ${item.id} (reden: ${item.rejectionReason})`);
   });
 
 program

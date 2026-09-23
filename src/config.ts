@@ -14,7 +14,7 @@ export const EMBEDDING_MODEL = "Xenova/paraphrase-multilingual-MiniLM-L12-v2";
 // sleept en die als grondslag gebruikt (blueprint advies 6.1).
 export const MIN_RELEVANCE_SCORE = Number(process.env.MIN_RELEVANCE_SCORE ?? 0.2);
 export const CLAUDE_MODEL = process.env.CLAUDE_MODEL ?? "claude-sonnet-5";
-export const PROMPT_VERSION = "digest-artifact-v1";
+export const PROMPT_VERSION = "opdracht-v1";
 
 export const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
@@ -22,3 +22,5 @@ export const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 export const GENERATION_PROVIDER = process.env.GENERATION_PROVIDER ?? "claude";
 export const OLLAMA_MODEL = process.env.OLLAMA_MODEL ?? "qwen2.5:7b-instruct";
 export const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL ?? "http://localhost:11434";
+
+export const SERVER_PORT = Number(process.env.PORT ?? 3001);

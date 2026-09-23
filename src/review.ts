@@ -1,7 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { GENERATED_DIR } from "./config.js";
-import type { GeneratedItem } from "./types.js";
+import type { GeneratedContent, GeneratedItem } from "./types.js";
 
 async function loadAll(): Promise<GeneratedItem[]> {
   await fs.mkdir(GENERATED_DIR, { recursive: true });
@@ -28,6 +28,17 @@ export async function listPending(): Promise<GeneratedItem[]> {
 
 export async function listAll(): Promise<GeneratedItem[]> {
   return loadAll();
+}
+
+export async function getOne(id: string): Promise<GeneratedItem> {
+  return loadOne(id);
+}
+
+export async function updateContent(id: string, content: GeneratedContent): Promise<GeneratedItem> {
+  const item = await loadOne(id);
+  item.content = content;
+  await saveOne(item);
+  return item;
 }
 
 export async function approve(id: string, edited: boolean): Promise<GeneratedItem> {
