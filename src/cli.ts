@@ -49,11 +49,13 @@ program
   .option("--top-k <n>", "aantal fragmenten om op te halen", "5")
   .option("--source-type <type>", "filter op brontype")
   .option("--since <date>", "alleen bronnen gepubliceerd na deze datum (YYYY-MM-DD)")
+  .option("--provider <provider>", "\"claude\" of \"ollama\" (overschrijft GENERATION_PROVIDER uit .env)")
   .action(async (topic: string, options) => {
     const item = await generateDigestArtifact(topic, {
       topK: Number(options.topK),
       sourceType: options.sourceType,
       sinceDate: options.since,
+      provider: options.provider,
     });
     console.log(`\nGegenereerd (status: ${item.status}, id: ${item.id})\n`);
     console.log(`Titel: ${item.title}`);

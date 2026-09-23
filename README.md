@@ -48,7 +48,7 @@ Ontwerpkeuzes die direct uit het advies in §6 van het blueprint komen:
 ## Techstack
 
 - **Node.js + TypeScript**, uitgevoerd via `tsx` (geen build-stap nodig).
-- **Embeddings**: lokaal via `@xenova/transformers` (`Xenova/all-MiniLM-L6-v2`, 384
+- **Embeddings**: lokaal via `@huggingface/transformers` (`Xenova/all-MiniLM-L6-v2`, 384
   dimensies). Draait volledig on-device, geen API-key nodig, model wordt bij eerste
   gebruik automatisch gedownload (~90 MB) en gecachet.
 - **Vectordatabase**: bewust simpel gehouden — een lokaal JSON-bestand
@@ -56,15 +56,39 @@ Ontwerpkeuzes die direct uit het advies in §6 van het blueprint komen:
   (vervaldatum, brontype, publicatiedatum). Voor een productie-backoffice is dit het
   eerste onderdeel om te vervangen door een echte vectordatabase (bv. pgvector), maar
   voor een testproject maakt dit de hele pijplijn transparant en inspecteerbaar.
-- **Generatie**: Claude via `@anthropic-ai/sdk`, met een verplichte tool call
-  (`submit_digest_artifact`) zodat de output altijd gestructureerd is (titel, "in één
-  zin"-samenvatting, body, citaties) in plaats van vrije tekst die geparsed moet worden.
+- **Generatie**: providerneutrale laag in `src/llm/` achter een klein interface
+  (`LLMProvider.generateDigestArtifact`). Twee providers:
+  - `claude` (`src/llm/claude.ts`) — Anthropic API via `@anthropic-ai/sdk`, met een
+    verplichte tool call (`submit_digest_artifact`) zodat de output altijd gestructureerd
+    is. Kost geld per call, beste kwaliteit.
+  - `ollama` (`src/llm/ollama.ts`) — lokaal model via [Ollama](https://ollama.com)
+    (standaard `qwen2.5:7b-instruct`), JSON-gedwongen via Ollama's `format: "json"`.
+    Gratis en offline, iets minder betrouwbaar in het strikt volgen van instructies dan
+    Claude.
+
+  Welke provider gebruikt wordt, staat in `.env` (`GENERATION_PROVIDER`) en kan per
+  aanroep overschreven worden met `--provider claude` / `--provider ollama`.
 
 ## Setup
 
 ```bash
 npm install
 cp .env.example .env
+```
+
+Kies daarna één van de twee generatie-providers in `.env`:
+
+**Optie A — lokaal met Ollama (gratis, geen account nodig)**
+```bash
+brew install ollama        # of download van https://ollama.com
+ollama pull qwen2.5:7b-instruct   # ~4,7 GB, eenmalig
+```
+Ollama draait daarna vanzelf op de achtergrond (`http://localhost:11434`). Zet in `.env`:
+`GENERATION_PROVIDER=ollama`.
+
+**Optie B — Claude via de Anthropic API (beste kwaliteit, betaald)**
+```bash
+# .env: GENERATION_PROVIDER=claude
 # vul ANTHROPIC_API_KEY in .env in (console.anthropic.com)
 ```
 

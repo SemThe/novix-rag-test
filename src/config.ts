@@ -11,3 +11,8 @@ export const CLAUDE_MODEL = process.env.CLAUDE_MODEL ?? "claude-sonnet-5";
 export const PROMPT_VERSION = "digest-artifact-v1";
 
 export const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+
+// "claude" (Anthropic API, kwalitatief het beste) of "ollama" (lokaal, geen API-key nodig)
+export const GENERATION_PROVIDER = process.env.GENERATION_PROVIDER ?? "claude";
+export const OLLAMA_MODEL = process.env.OLLAMA_MODEL ?? "qwen2.5:7b-instruct";
+export const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL ?? "http://localhost:11434";
