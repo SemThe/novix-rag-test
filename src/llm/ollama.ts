@@ -17,6 +17,13 @@ function isNonEmptyRecord(value: unknown): value is Record<string, unknown> {
 
 function isValidResult(opdrachtType: OpdrachtType, value: unknown): value is DigestArtifactResult {
   if (!isNonEmptyRecord(value)) return false;
+  if (typeof value.grounded !== "boolean") return false;
+
+  // Bij grounded:false gaat generateContent() dit sowieso als weigering behandelen —
+  // de overige velden negeren we dan, dus die hoeven niet aan het volledige schema te
+  // voldoen (het model mag ze leeg laten in plaats van een quizvraag te verzinnen).
+  if (value.grounded === false) return true;
+
   if (!Array.isArray(value.citations) || !value.citations.every((c) => typeof c === "string")) return false;
 
   if (opdrachtType === "digest-artifact") {
@@ -129,9 +136,10 @@ export class OllamaProvider implements LLMProvider {
     // Lokale modellen volgen het schema minder strikt dan Claude's tool-calling; citaties
     // komen soms nog met [blokhaken] of witruimte terug ondanks de instructie. Opschonen
     // in plaats van de hele generatie afwijzen op een cosmetisch verschil.
+    const citations = Array.isArray(parsed.citations) ? parsed.citations : [];
     return {
       ...parsed,
-      citations: parsed.citations.map((c) => c.trim().replace(/^\[|\]$/g, "")),
+      citations: citations.map((c) => String(c).trim().replace(/^\[|\]$/g, "")),
     };
   }
 }

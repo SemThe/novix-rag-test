@@ -45,11 +45,20 @@ export async function generateContent(
 
   // Een model dat af en toe een net verkeerd chunk-id citeert is een format-onhebbelijkheid
   // van het model, geen teken dat er geen grondslag is — daarom hier een tweede kans
-  // geven voordat we de generatie definitief weigeren.
+  // geven voordat we de generatie definitief weigeren. Een expliciete grounded:false is
+  // wél meteen definitief: dat is het model dat zelf beoordeelt dat het onderwerp niet
+  // door de fragmenten gedekt wordt (of een poging om instructies te laten negeren), en
+  // die beoordeling verandert niet door het gewoon nog eens te proberen.
   let raw: Awaited<ReturnType<typeof provider.generate>> | undefined;
   let validCitationIds: string[] = [];
   for (let attempt = 1; attempt <= 2; attempt++) {
     raw = await provider.generate(opdrachtType, topic, opts.instructions, chunks);
+    if (raw.grounded === false) {
+      throw new Error(
+        `Generatie geweigerd: de opgehaalde fragmenten dekken "${topic}" niet inhoudelijk genoeg om deze opdracht ` +
+          "te onderbouwen. Het systeem genereert nooit zonder echte brongrondslag (blueprint advies 6.1)."
+      );
+    }
     validCitationIds = (raw.citations ?? []).filter((id) => retrievedIds.has(id));
     if (validCitationIds.length > 0) break;
   }

@@ -12,7 +12,12 @@ export const EMBEDDING_MODEL = "Xenova/paraphrase-multilingual-MiniLM-L12-v2";
 // beschouwd, ook niet als ze toevallig in de top-K vallen. Voorkomt dat het systeem bij
 // een onderwerp dat geen enkele bron dekt, tóch de "minst irrelevante" fragmenten erbij
 // sleept en die als grondslag gebruikt (blueprint advies 6.1).
-export const MIN_RELEVANCE_SCORE = Number(process.env.MIN_RELEVANCE_SCORE ?? 0.2);
+// 0.4 i.p.v. een lagere waarde: bij een groter/diverser corpus scoort ook een volledig
+// ongerelateerde query bijna altijd "toevallig" iets in de 0.2-0.35 range puur door
+// taalgelijkenis — geverifieerd met een corpus van 200+ chunks. Dit is een eerste, snelle
+// filter; de eigenlijke garantie zit in de expliciete "grounded"-check die het model zelf
+// moet invullen (zie src/llm/promptContext.ts).
+export const MIN_RELEVANCE_SCORE = Number(process.env.MIN_RELEVANCE_SCORE ?? 0.4);
 export const CLAUDE_MODEL = process.env.CLAUDE_MODEL ?? "claude-sonnet-5";
 export const PROMPT_VERSION = "opdracht-v1";
 
