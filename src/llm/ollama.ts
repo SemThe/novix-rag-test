@@ -3,7 +3,7 @@ import { BASE_SYSTEM_PROMPT, buildContext, OPDRACHT_SPECS } from "./promptContex
 import type { DigestArtifactResult, LLMProvider } from "./types.js";
 import type { OpdrachtType, RetrievedChunk } from "../types.js";
 
-const MAX_ATTEMPTS = 2;
+const MAX_ATTEMPTS = 3;
 
 function schemaInstructions(opdrachtType: OpdrachtType): string {
   const spec = OPDRACHT_SPECS[opdrachtType];
@@ -13,6 +13,38 @@ ${spec.schemaDescription.replace(/}\s*$/, `,\n  "citations": ["de chunk-id's die
 
 function isNonEmptyRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+// Woorden die vrijwel alleen in het Nederlands resp. Engels voorkomen (dus geen "is"/"was"/
+// "in", die in beide talen identiek zijn). Lokale modellen "vallen terug" soms volledig op de
+// brontaal ondanks expliciete instructies — dit is een programmatische vangnet daarvoor,
+// niet alleen een promptaanpassing (die bleek onvoldoende betrouwbaar in de praktijk).
+const DUTCH_SIGNAL_WORDS = new Set([
+  "de", "het", "een", "van", "en", "dat", "die", "niet", "voor", "met", "wordt", "werd",
+  "deze", "dit", "hun", "zijn", "moet", "kan", "ook", "maar", "dan", "wat", "hij", "uit",
+  "naar", "bij", "om", "aan", "door", "geen", "wel", "toch", "dus", "omdat", "terwijl", "tijdens",
+]);
+const ENGLISH_SIGNAL_WORDS = new Set([
+  "the", "and", "of", "that", "with", "his", "her", "their", "from", "this", "these",
+  "were", "been", "have", "has", "which", "who", "but", "are", "for", "while", "during", "because",
+]);
+
+function extractTextForLanguageCheck(value: Record<string, unknown>): string {
+  const parts: unknown[] = [value.title, value.oneSentenceSummary, value.body, value.fact, value.question, value.explanation];
+  if (Array.isArray(value.options)) parts.push(...value.options);
+  return parts.filter((p) => typeof p === "string").join(" ");
+}
+
+function looksLikeNonDutch(text: string): boolean {
+  const words = text.toLowerCase().match(/\b[a-z]+\b/g) ?? [];
+  let dutchScore = 0;
+  let englishScore = 0;
+  for (const w of words) {
+    if (DUTCH_SIGNAL_WORDS.has(w)) dutchScore++;
+    if (ENGLISH_SIGNAL_WORDS.has(w)) englishScore++;
+  }
+  // Pas afkeuren bij een duidelijk signaal, om korte/neutrale tekst niet vals te flaggen.
+  return englishScore >= 3 && englishScore > dutchScore;
 }
 
 function isValidResult(opdrachtType: OpdrachtType, value: unknown): value is DigestArtifactResult {
@@ -53,16 +85,28 @@ export class OllamaProvider implements LLMProvider {
     chunks: RetrievedChunk[]
   ): Promise<DigestArtifactResult> {
     let lastError: Error | undefined;
+    let correction: string | undefined;
 
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
       try {
-        return await this.attemptOnce(opdrachtType, topic, instructions, chunks);
+        return await this.attemptOnce(opdrachtType, topic, instructions, chunks, correction, attempt);
       } catch (err) {
         lastError = err as Error;
-        // Alleen retrien op een format-fout van het lokale model (ongeldige JSON of
-        // schema-mismatch) — niet op netwerk-/HTTP-fouten, die falen meteen door.
-        const isFormatError = lastError.message.includes("geen geldige JSON") || lastError.message.includes("mist verplichte velden");
-        if (!isFormatError || attempt === MAX_ATTEMPTS) throw lastError;
+        // Alleen retrien op een format-fout van het lokale model (ongeldige JSON, schema-
+        // mismatch, of verkeerde taal) — niet op netwerk-/HTTP-fouten, die falen meteen door.
+        if (lastError.message.includes("geen geldige JSON") || lastError.message.includes("mist verplichte velden")) {
+          correction =
+            "LET OP: je vorige antwoord voldeed niet aan het gevraagde JSON-schema (verplicht veld ontbrak of " +
+            "had het verkeerde type). Lever nu een antwoord dat EXACT aan het schema voldoet.";
+        } else if (lastError.message.includes("lijkt niet in het Nederlands")) {
+          correction =
+            "LET OP: je vorige antwoord was (grotendeels) in het Engels. Dat is niet toegestaan. Schrijf dit " +
+            "keer de VOLLEDIGE inhoud van elk veld — titel, vraag, opties, toelichting, alles — in vloeiend " +
+            "Nederlands, ook al is de brontekst Engelstalig.";
+        } else {
+          throw lastError; // netwerk-/HTTP-fout: niet retryen
+        }
+        if (attempt === MAX_ATTEMPTS) throw lastError;
       }
     }
     throw lastError;
@@ -72,11 +116,14 @@ export class OllamaProvider implements LLMProvider {
     opdrachtType: OpdrachtType,
     topic: string,
     instructions: string | undefined,
-    chunks: RetrievedChunk[]
+    chunks: RetrievedChunk[],
+    correction: string | undefined,
+    attempt: number
   ): Promise<DigestArtifactResult> {
     const spec = OPDRACHT_SPECS[opdrachtType];
 
     const userPrompt = [
+      correction,
       `Opdracht: ${spec.instructions}`,
       `Onderwerp: "${topic}"`,
       instructions ? `Extra instructies van de redacteur: ${instructions}` : null,
@@ -96,8 +143,10 @@ export class OllamaProvider implements LLMProvider {
         // chunk-id's letterlijk correct moeten zijn, geen vrije creatieve tekst. Te hoge
         // temperature liet het model af en toe een net verkeerd chunk-id citeren of het
         // schema niet volgen, wat de generatie onnodig liet mislukken op verificatie in
-        // plaats van op inhoud.
-        options: { temperature: 0.4 },
+        // plaats van op inhoud. Bij een retry (correction is dan gezet) juist iets hoger dan
+        // de eerste poging: bij 0.4 herhaalt het model anders soms haast letterlijk dezelfde
+        // (foute) output, wat een retry zinloos maakt.
+        options: { temperature: correction ? 0.4 + 0.15 * attempt : 0.4 },
         messages: [
           { role: "system", content: `${BASE_SYSTEM_PROMPT}\n\n${schemaInstructions(opdrachtType)}` },
           { role: "user", content: userPrompt },
@@ -131,6 +180,10 @@ export class OllamaProvider implements LLMProvider {
       throw new Error(
         `Ollama-output mist verplichte velden of heeft het verkeerde type: ${JSON.stringify(parsed).slice(0, 300)}`
       );
+    }
+
+    if (parsed.grounded !== false && looksLikeNonDutch(extractTextForLanguageCheck(parsed))) {
+      throw new Error(`Ollama-output lijkt niet in het Nederlands te zijn: ${JSON.stringify(parsed).slice(0, 300)}`);
     }
 
     // Lokale modellen volgen het schema minder strikt dan Claude's tool-calling; citaties

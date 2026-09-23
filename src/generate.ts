@@ -52,7 +52,17 @@ export async function generateContent(
   let raw: Awaited<ReturnType<typeof provider.generate>> | undefined;
   let validCitationIds: string[] = [];
   for (let attempt = 1; attempt <= 2; attempt++) {
-    raw = await provider.generate(opdrachtType, topic, opts.instructions, chunks);
+    try {
+      raw = await provider.generate(opdrachtType, topic, opts.instructions, chunks);
+    } catch (err) {
+      // De provider heeft zelf al meerdere pogingen gedaan (zie bv. OllamaProvider) en gaf
+      // het op — een verwarrende interne foutmelding tonen helpt de gebruiker niet, dus dit
+      // wordt netjes als weigering afgehandeld in plaats van als serverfout.
+      throw new Error(
+        `Generatie geweigerd: ${provider.name} kon geen geldig antwoord genereren na meerdere pogingen ` +
+          `(${(err as Error).message.split(":")[0].toLowerCase()}). Probeer het nog eens.`
+      );
+    }
     if (raw.grounded === false) {
       throw new Error(
         `Generatie geweigerd: de opgehaalde fragmenten dekken "${topic}" niet inhoudelijk genoeg om deze opdracht ` +

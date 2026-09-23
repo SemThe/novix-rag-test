@@ -9,15 +9,19 @@ export const GENERATED_DIR = path.join(ROOT_DIR, "data", "generated");
 export const EMBEDDING_MODEL = "Xenova/paraphrase-multilingual-MiniLM-L12-v2";
 
 // Fragmenten met een cosine-similarity onder deze drempel worden nooit als relevant
-// beschouwd, ook niet als ze toevallig in de top-K vallen. Voorkomt dat het systeem bij
-// een onderwerp dat geen enkele bron dekt, tóch de "minst irrelevante" fragmenten erbij
-// sleept en die als grondslag gebruikt (blueprint advies 6.1).
-// 0.4 i.p.v. een lagere waarde: bij een groter/diverser corpus scoort ook een volledig
-// ongerelateerde query bijna altijd "toevallig" iets in de 0.2-0.35 range puur door
-// taalgelijkenis — geverifieerd met een corpus van 200+ chunks. Dit is een eerste, snelle
-// filter; de eigenlijke garantie zit in de expliciete "grounded"-check die het model zelf
-// moet invullen (zie src/llm/promptContext.ts).
-export const MIN_RELEVANCE_SCORE = Number(process.env.MIN_RELEVANCE_SCORE ?? 0.4);
+// beschouwd, ook niet als ze toevallig in de top-K vallen. Dit is bewust een LAGE, grove
+// eerste filter (alleen bedoeld om evident niets-met-elkaar-te-maken content eruit te
+// halen, bv. "recept voor appeltaart" scoort ~0), geen betrouwbaarheidsgarantie op zich.
+//
+// Eerder stond dit op 0.4 om een prompt-injectiepoging tegen te houden die bij een groot
+// corpus (200+ chunks) toevallig ~0.30-0.33 scoorde. Bleek een verkeerde oplossing: een
+// kórte maar wél terecht gedekte zoekopdracht (bv. "AOW") scoort tegen datzelfde grote
+// corpus soms lager (~0.29) dan die ongerelateerde ruis — er bestaat dus geen vaste
+// drempel die beide gevallen correct uit elkaar houdt. De echte garantie zit in de
+// verplichte "grounded"-zelfcontrole die het model per antwoord moet invullen (zie
+// src/llm/promptContext.ts): die beoordeelt de daadwerkelijke inhoud, niet alleen een
+// similarity-getal, en ving de injectiepoging al af vóórdat deze drempel weer omlaag ging.
+export const MIN_RELEVANCE_SCORE = Number(process.env.MIN_RELEVANCE_SCORE ?? 0.2);
 export const CLAUDE_MODEL = process.env.CLAUDE_MODEL ?? "claude-sonnet-5";
 export const PROMPT_VERSION = "opdracht-v1";
 

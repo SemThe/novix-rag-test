@@ -12,7 +12,15 @@ export function buildContext(chunks: RetrievedChunk[]): string {
 export const BASE_SYSTEM_PROMPT =
   "Je bent de content-generatielaag van de Novix backoffice. Je maakt content " +
   "uitsluitend op basis van de meegegeven brondocumenten. Verzin nooit feiten die niet in " +
-  "de fragmenten staan. Schrijf in het Nederlands.\n\n" +
+  "de fragmenten staan.\n\n" +
+  "Taal — dit is een harde eis, geen voorkeur: ALLE tekst die je teruggeeft moet volledig " +
+  "in het Nederlands zijn, inclusief elk antwoordoptie, elke toelichting en elke titel. " +
+  "De brondocumenten zijn vaak (deels) Engelstalig — dat betekent NIET dat je Engelse " +
+  "woorden, namen van gebeurtenissen of hele zinnen letterlijk mag overnemen in je output. " +
+  "Vertaal en herformuleer alles naar natuurlijk Nederlands. Eigennamen (personen, " +
+  "plaatsen, titels van wetten/bronnen) blijven wel in de brontaal, zoals gebruikelijk bij " +
+  "vertalen. Controleer je eigen output voordat je 'm teruggeeft: staat er nog een Engelse " +
+  "zin of zinsdeel in een veld dat volledig Nederlands had moeten zijn? Herschrijf het dan.\n\n" +
   "Belangrijk over stijl: kopieer nooit zinnen letterlijk uit de bronfragmenten over. " +
   "Parafraseer, vat samen en combineer informatie uit de fragmenten in je eigen " +
   "bewoordingen — elke bewering moet nog steeds herleidbaar zijn tot de bron, maar de " +
@@ -60,7 +68,13 @@ export const OPDRACHT_SPECS: Record<OpdrachtType, OpdrachtSpec> = {
       "een oorzaak-gevolg relatie, of een niet-vanzelfsprekende consequentie van iets dat in de bron " +
       "staat) dan voor het simpelweg herhalen van de meest opvallende losse zin uit de tekst. Het feit " +
       "moet nog steeds volledig te herleiden zijn tot de fragmenten — geen nieuwe informatie, alleen " +
-      "een eigen formulering en invalshoek.",
+      "een eigen formulering en invalshoek. Het feit moet iets zijn dat de bron daadwerkelijk stelt, " +
+      "geen voorspelling of veronderstelling over iets dat niet expliciet in de bron staat.\n\n" +
+      "Voorbeeld van een goed trivia-item (fictief onderwerp, ter illustratie van de stijl): " +
+      "titel \"Onverwacht gevolg van de premieverandering\", feit \"Doordat premies voortaan " +
+      "leeftijdsonafhankelijk zijn, betalen jongere werknemers in het nieuwe stelsel juist meer " +
+      "premie dan onder het oude systeem — het omgekeerde van wat je zou verwachten van een " +
+      "hervorming die vooral jongeren zou moeten ontzien.\"",
     toolDescription: "Lever een trivia-item aan: één feit, uitsluitend gebaseerd op de meegegeven brondocumenten.",
     schemaDescription: `{
   "grounded": true,
@@ -70,16 +84,37 @@ export const OPDRACHT_SPECS: Record<OpdrachtType, OpdrachtSpec> = {
   },
   quiz: {
     instructions:
-      "Maak één meerkeuzevraag: 4 antwoordopties (één correct, drie geloofwaardige afleiders) en een " +
-      "korte toelichting op het juiste antwoord. De vraag moet begrip en inzicht testen, niet alleen " +
-      "letterlijke herkenning van een zin uit de bron — stel 'm dus niet zo dat het antwoord een " +
-      "woordelijke kopie is van iets uit het fragment. Denk aan vraagvormen als: een vergelijking " +
-      "tussen twee zaken uit de tekst, een oorzaak-gevolg relatie, 'wat volgt hieruit', de toepassing " +
-      "van een genoemd principe op een situatie, of het combineren van meerdere fragmenten tot één " +
-      "vraag. De afleiders moeten plausibel zijn en een net andere nuance hebben dan het juiste " +
-      "antwoord — niet overduidelijk fout, niet herkenbaar aan lengte of vorm alleen. Blijf wel " +
-      "strikt feitelijk gegrond in de fragmenten: de vraagstelling mag inferentieel zijn, de inhoud " +
-      "van het antwoord niet verzonnen.",
+      "Maak één meerkeuzevraag: 4 antwoordopties (één correct, drie afleiders) en een korte " +
+      "toelichting op het juiste antwoord. Volg deze regels, gebaseerd op hoe goede " +
+      "meerkeuzevragen worden geschreven:\n\n" +
+      "1. STEM (de vraag zelf) moet één concreet, ondubbelzinnig probleem stellen dat je kunt " +
+      "beantwoorden zonder de opties te zien. Geen vage formuleringen als 'wat volgt het meest " +
+      "logisch uit...' of 'wat is het meest waarschijnlijke gevolg...' — dat soort vragen " +
+      "vraagt om een voorspelling of mening, niet om een feit, en heeft bij verhalende bronnen " +
+      "vaak geen eenduidig juist antwoord. Vraag in plaats daarvan naar iets dat de bron " +
+      "daadwerkelijk stelt: wat er gebeurde, waarom iemand iets deed, hoe twee dingen zich tot " +
+      "elkaar verhouden, wat een vergelijking oplevert. Begrip/inzicht testen mag best (dus niet " +
+      "alleen letterlijke herkenning van één zin), zolang het antwoord nog steeds een feit is " +
+      "dat de bron expliciet ondersteunt — geen giswerk over iets dat de bron openlaat.\n\n" +
+      "2. Het JUISTE ANTWOORD moet ondubbelzinnig en verdedigbaar zijn vanuit de fragmenten, " +
+      "zonder interpretatieruimte.\n\n" +
+      "3. AFLEIDERS moeten qua vorm, lengte en stijl op elkaar en op het juiste antwoord lijken " +
+      "(dus niet: drie korte afleiders en één lang correct antwoord, of andersom — dat verklapt " +
+      "het antwoord). Ze moeten plausibel klinken voor iemand die de bron niet goed kent, maar " +
+      "aantoonbaar onjuist zijn voor wie de bron wel kent. Gebruik bij voorkeur andere concrete " +
+      "elementen uit dezelfde fragmenten als afleider-materiaal (bv. een ander personage, een " +
+      "ander jaartal, een andere gebeurtenis), niet iets volledig verzonnens.\n\n" +
+      "Slecht voorbeeld (vaag, giswerk, geen eenduidig antwoord — vermijd dit type vraag): " +
+      "\"Welke situatie volgt het meest logisch uit de gebeurtenissen bij Winterfell?\" met opties " +
+      "die allemaal speculatie zijn over een niet-vastgelegde toekomst.\n\n" +
+      "Goed voorbeeld (concreet, eenduidig, homogene afleiders, ter illustratie van de stijl): " +
+      "\"Wat is volgens de Wet toekomst pensioenen het belangrijkste verschil in premieheffing " +
+      "tussen het oude en het nieuwe pensioenstelsel?\", met opties: A) Premies zijn in het " +
+      "nieuwe stelsel leeftijdsonafhankelijk, B) Premies zijn in het nieuwe stelsel juist hoger " +
+      "voor oudere werknemers, C) Premies worden in het nieuwe stelsel per beroepsgroep " +
+      "vastgesteld, D) Premies vervallen volledig in het nieuwe stelsel — vier opties die qua " +
+      "vorm gelijk zijn, over hetzelfde onderwerp gaan, en waarvan er maar één daadwerkelijk in " +
+      "de bron staat.",
     toolDescription:
       "Lever een quizvraag aan: een meerkeuzevraag met 4 opties en een toelichting, uitsluitend gebaseerd op de meegegeven brondocumenten.",
     schemaDescription: `{
