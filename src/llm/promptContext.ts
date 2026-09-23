@@ -13,7 +13,12 @@ export const BASE_SYSTEM_PROMPT =
   "Je bent de content-generatielaag van de Novix backoffice. Je maakt content " +
   "uitsluitend op basis van de meegegeven brondocumenten. Verzin nooit feiten die niet in " +
   "de fragmenten staan. Als de fragmenten de opdracht niet kunnen onderbouwen, zeg dat dan " +
-  "expliciet in plaats van te gokken. Schrijf in het Nederlands.";
+  "expliciet in plaats van te gokken. Schrijf in het Nederlands.\n\n" +
+  "Belangrijk over stijl: kopieer nooit zinnen letterlijk uit de bronfragmenten over. " +
+  "Parafraseer, vat samen en combineer informatie uit de fragmenten in je eigen " +
+  "bewoordingen — elke bewering moet nog steeds herleidbaar zijn tot de bron, maar de " +
+  "formulering moet van jou zijn, niet geknipt-en-geplakt. Dit is zowel voor de kwaliteit " +
+  "van de content als om auteursrechtelijke overname van brontekst te voorkomen.";
 
 interface OpdrachtSpec {
   instructions: string;
@@ -34,20 +39,36 @@ export const OPDRACHT_SPECS: Record<OpdrachtType, OpdrachtSpec> = {
 }`,
   },
   trivia: {
-    instructions: "Maak één trivia-item: een enkel, verrassend of interessant feit, geschikt voor een los kaartje.",
+    instructions:
+      "Maak één trivia-item: een verrassend of interessant inzicht, geschikt voor een los kaartje. " +
+      "Neem geen zin letterlijk over uit de bron — herformuleer het in eigen woorden. Ga liever voor " +
+      "een feit dat een verband legt (bijvoorbeeld: een vergelijking, een cijfer in context geplaatst, " +
+      "een oorzaak-gevolg relatie, of een niet-vanzelfsprekende consequentie van iets dat in de bron " +
+      "staat) dan voor het simpelweg herhalen van de meest opvallende losse zin uit de tekst. Het feit " +
+      "moet nog steeds volledig te herleiden zijn tot de fragmenten — geen nieuwe informatie, alleen " +
+      "een eigen formulering en invalshoek.",
     toolDescription: "Lever een trivia-item aan: één feit, uitsluitend gebaseerd op de meegegeven brondocumenten.",
     schemaDescription: `{
   "title": "korte titel voor het kaartje",
-  "fact": "het feit zelf, 1-3 zinnen, uitsluitend gebaseerd op de bronfragmenten"
+  "fact": "het feit zelf, 1-3 zinnen, in eigen woorden, uitsluitend gebaseerd op de bronfragmenten"
 }`,
   },
   quiz: {
     instructions:
-      "Maak één meerkeuzevraag: 4 antwoordopties (één correct, drie geloofwaardige afleiders) en een korte toelichting op het juiste antwoord.",
+      "Maak één meerkeuzevraag: 4 antwoordopties (één correct, drie geloofwaardige afleiders) en een " +
+      "korte toelichting op het juiste antwoord. De vraag moet begrip en inzicht testen, niet alleen " +
+      "letterlijke herkenning van een zin uit de bron — stel 'm dus niet zo dat het antwoord een " +
+      "woordelijke kopie is van iets uit het fragment. Denk aan vraagvormen als: een vergelijking " +
+      "tussen twee zaken uit de tekst, een oorzaak-gevolg relatie, 'wat volgt hieruit', de toepassing " +
+      "van een genoemd principe op een situatie, of het combineren van meerdere fragmenten tot één " +
+      "vraag. De afleiders moeten plausibel zijn en een net andere nuance hebben dan het juiste " +
+      "antwoord — niet overduidelijk fout, niet herkenbaar aan lengte of vorm alleen. Blijf wel " +
+      "strikt feitelijk gegrond in de fragmenten: de vraagstelling mag inferentieel zijn, de inhoud " +
+      "van het antwoord niet verzonnen.",
     toolDescription:
       "Lever een quizvraag aan: een meerkeuzevraag met 4 opties en een toelichting, uitsluitend gebaseerd op de meegegeven brondocumenten.",
     schemaDescription: `{
-  "question": "de vraag",
+  "question": "de vraag — test begrip/inzicht, geen letterlijke herkenning",
   "options": ["optie A", "optie B", "optie C", "optie D"],
   "correctIndex": 0,
   "explanation": "korte toelichting waarom dit antwoord klopt, met verwijzing naar de bron"

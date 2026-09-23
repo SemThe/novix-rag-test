@@ -32,10 +32,16 @@ function buildTool(opdrachtType: OpdrachtType) {
       : opdrachtType === "trivia"
         ? {
             title: { type: "string", description: "Korte titel voor het kaartje." },
-            fact: { type: "string", description: "Het feit, 1-3 zinnen." },
+            fact: {
+              type: "string",
+              description: "Het feit, 1-3 zinnen, in eigen woorden — geen letterlijke zin uit de bron overgenomen.",
+            },
           }
         : {
-            question: { type: "string", description: "De vraag." },
+            question: {
+              type: "string",
+              description: "De vraag — test begrip/inzicht (vergelijking, oorzaak-gevolg, toepassing), geen letterlijke herkenning van een bronzin.",
+            },
             options: { type: "array", items: { type: "string" }, description: "Exact 4 antwoordopties." },
             correctIndex: { type: "integer", description: "Index (0-3) van het juiste antwoord in 'options'." },
             explanation: { type: "string", description: "Korte toelichting op het juiste antwoord." },

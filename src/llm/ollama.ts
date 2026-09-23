@@ -3,6 +3,8 @@ import { BASE_SYSTEM_PROMPT, buildContext, OPDRACHT_SPECS } from "./promptContex
 import type { DigestArtifactResult, LLMProvider } from "./types.js";
 import type { OpdrachtType, RetrievedChunk } from "../types.js";
 
+const MAX_ATTEMPTS = 2;
+
 function schemaInstructions(opdrachtType: OpdrachtType): string {
   const spec = OPDRACHT_SPECS[opdrachtType];
   return `Antwoord UITSLUITEND met een geldig JSON-object, zonder uitleg eromheen, met exact deze velden (plus "citations"):
@@ -43,6 +45,28 @@ export class OllamaProvider implements LLMProvider {
     instructions: string | undefined,
     chunks: RetrievedChunk[]
   ): Promise<DigestArtifactResult> {
+    let lastError: Error | undefined;
+
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      try {
+        return await this.attemptOnce(opdrachtType, topic, instructions, chunks);
+      } catch (err) {
+        lastError = err as Error;
+        // Alleen retrien op een format-fout van het lokale model (ongeldige JSON of
+        // schema-mismatch) — niet op netwerk-/HTTP-fouten, die falen meteen door.
+        const isFormatError = lastError.message.includes("geen geldige JSON") || lastError.message.includes("mist verplichte velden");
+        if (!isFormatError || attempt === MAX_ATTEMPTS) throw lastError;
+      }
+    }
+    throw lastError;
+  }
+
+  private async attemptOnce(
+    opdrachtType: OpdrachtType,
+    topic: string,
+    instructions: string | undefined,
+    chunks: RetrievedChunk[]
+  ): Promise<DigestArtifactResult> {
     const spec = OPDRACHT_SPECS[opdrachtType];
 
     const userPrompt = [
@@ -61,6 +85,12 @@ export class OllamaProvider implements LLMProvider {
         model: OLLAMA_MODEL,
         stream: false,
         format: "json",
+        // Lager dan Ollama's default (~0.8): dit is gestructureerde, gegronde output waarbij
+        // chunk-id's letterlijk correct moeten zijn, geen vrije creatieve tekst. Te hoge
+        // temperature liet het model af en toe een net verkeerd chunk-id citeren of het
+        // schema niet volgen, wat de generatie onnodig liet mislukken op verificatie in
+        // plaats van op inhoud.
+        options: { temperature: 0.4 },
         messages: [
           { role: "system", content: `${BASE_SYSTEM_PROMPT}\n\n${schemaInstructions(opdrachtType)}` },
           { role: "user", content: userPrompt },

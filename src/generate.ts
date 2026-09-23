@@ -41,12 +41,20 @@ export async function generateContent(
   }
 
   const provider = getProvider(opts.provider);
-  const raw = await provider.generate(opdrachtType, topic, opts.instructions, chunks);
-
   const retrievedIds = new Set(chunks.map((c) => c.id));
-  const validCitationIds = (raw.citations ?? []).filter((id) => retrievedIds.has(id));
 
-  if (validCitationIds.length === 0) {
+  // Een model dat af en toe een net verkeerd chunk-id citeert is een format-onhebbelijkheid
+  // van het model, geen teken dat er geen grondslag is — daarom hier een tweede kans
+  // geven voordat we de generatie definitief weigeren.
+  let raw: Awaited<ReturnType<typeof provider.generate>> | undefined;
+  let validCitationIds: string[] = [];
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    raw = await provider.generate(opdrachtType, topic, opts.instructions, chunks);
+    validCitationIds = (raw.citations ?? []).filter((id) => retrievedIds.has(id));
+    if (validCitationIds.length > 0) break;
+  }
+
+  if (!raw || validCitationIds.length === 0) {
     throw new Error(
       "Generatie geweigerd: het model gaf geen citaties die terug te herleiden zijn naar de opgehaalde fragmenten " +
         "(mogelijk gehallucineerd). Geen output zonder verifieerbare bronvermelding."
