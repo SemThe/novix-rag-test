@@ -8,7 +8,7 @@ const JSON_SCHEMA_INSTRUCTIONS = `Antwoord UITSLUITEND met een geldig JSON-objec
   "title": "korte titel",
   "oneSentenceSummary": "de kern in één zin",
   "body": "het uitlegstuk, 100-200 woorden, uitsluitend gebaseerd op de bronfragmenten",
-  "citations": ["chunk-id's die je daadwerkelijk gebruikt hebt, exact zoals gegeven tussen [blokhaken]"]
+  "citations": ["de chunk-id's die je daadwerkelijk gebruikt hebt, bv. \\"bron-1#0\\" — ZONDER blokhaken eromheen"]
 }`;
 
 function isDigestArtifactResult(value: unknown): value is DigestArtifactResult {
@@ -72,6 +72,12 @@ export class OllamaProvider implements LLMProvider {
       );
     }
 
-    return parsed;
+    // Lokale modellen volgen het schema minder strikt dan Claude's tool-calling; citaties
+    // komen soms nog met [blokhaken] of witruimte terug ondanks de instructie. Opschonen
+    // in plaats van de hele generatie afwijzen op een cosmetisch verschil.
+    return {
+      ...parsed,
+      citations: parsed.citations.map((c) => c.trim().replace(/^\[|\]$/g, "")),
+    };
   }
 }

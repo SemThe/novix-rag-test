@@ -26,11 +26,13 @@ program
   .option("--top-k <n>", "aantal fragmenten om op te halen", "5")
   .option("--source-type <type>", "filter op brontype")
   .option("--since <date>", "alleen bronnen gepubliceerd na deze datum (YYYY-MM-DD)")
+  .option("--min-score <n>", "minimale cosine-similarity om mee te tellen (0-1)")
   .action(async (query: string, options) => {
     const results = await retrieve(query, {
       topK: Number(options.topK),
       sourceType: options.sourceType,
       sinceDate: options.since,
+      minScore: options.minScore !== undefined ? Number(options.minScore) : undefined,
     });
     if (results.length === 0) {
       console.log("Geen (niet-verlopen) fragmenten gevonden. Draai eerst 'npm run ingest'.");
@@ -49,12 +51,14 @@ program
   .option("--top-k <n>", "aantal fragmenten om op te halen", "5")
   .option("--source-type <type>", "filter op brontype")
   .option("--since <date>", "alleen bronnen gepubliceerd na deze datum (YYYY-MM-DD)")
+  .option("--min-score <n>", "minimale cosine-similarity om mee te tellen (0-1)")
   .option("--provider <provider>", "\"claude\" of \"ollama\" (overschrijft GENERATION_PROVIDER uit .env)")
   .action(async (topic: string, options) => {
     const item = await generateDigestArtifact(topic, {
       topK: Number(options.topK),
       sourceType: options.sourceType,
       sinceDate: options.since,
+      minScore: options.minScore !== undefined ? Number(options.minScore) : undefined,
       provider: options.provider,
     });
     console.log(`\nGegenereerd (status: ${item.status}, id: ${item.id})\n`);

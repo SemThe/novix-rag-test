@@ -6,7 +6,13 @@ export const SOURCES_DIR = path.join(ROOT_DIR, "data", "sources");
 export const VECTORSTORE_PATH = path.join(ROOT_DIR, "data", "vectorstore.json");
 export const GENERATED_DIR = path.join(ROOT_DIR, "data", "generated");
 
-export const EMBEDDING_MODEL = "Xenova/all-MiniLM-L6-v2";
+export const EMBEDDING_MODEL = "Xenova/paraphrase-multilingual-MiniLM-L12-v2";
+
+// Fragmenten met een cosine-similarity onder deze drempel worden nooit als relevant
+// beschouwd, ook niet als ze toevallig in de top-K vallen. Voorkomt dat het systeem bij
+// een onderwerp dat geen enkele bron dekt, tóch de "minst irrelevante" fragmenten erbij
+// sleept en die als grondslag gebruikt (blueprint advies 6.1).
+export const MIN_RELEVANCE_SCORE = Number(process.env.MIN_RELEVANCE_SCORE ?? 0.2);
 export const CLAUDE_MODEL = process.env.CLAUDE_MODEL ?? "claude-sonnet-5";
 export const PROMPT_VERSION = "digest-artifact-v1";
 

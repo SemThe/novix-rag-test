@@ -1,6 +1,6 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { VECTORSTORE_PATH } from "./config.js";
+import { MIN_RELEVANCE_SCORE, VECTORSTORE_PATH } from "./config.js";
 import { cosineSimilarity } from "./embeddings.js";
 import type { Chunk, RetrievedChunk } from "./types.js";
 
@@ -37,9 +37,9 @@ export class VectorStore {
    */
   search(
     queryEmbedding: number[],
-    opts: { topK?: number; sourceType?: string; sinceDate?: string } = {}
+    opts: { topK?: number; sourceType?: string; sinceDate?: string; minScore?: number } = {}
   ): RetrievedChunk[] {
-    const { topK = 5, sourceType, sinceDate } = opts;
+    const { topK = 5, sourceType, sinceDate, minScore = MIN_RELEVANCE_SCORE } = opts;
     const now = new Date();
 
     const candidates = this.chunks.filter((c) => {
@@ -51,6 +51,7 @@ export class VectorStore {
 
     return candidates
       .map((c) => ({ ...c, score: cosineSimilarity(queryEmbedding, c.embedding) }))
+      .filter((c) => c.score >= minScore)
       .sort((a, b) => b.score - a.score)
       .slice(0, topK);
   }

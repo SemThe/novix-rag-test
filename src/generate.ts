@@ -8,7 +8,7 @@ import type { GeneratedItem } from "./types.js";
 
 export async function generateDigestArtifact(
   topic: string,
-  opts: { topK?: number; sourceType?: string; sinceDate?: string; provider?: string } = {}
+  opts: { topK?: number; sourceType?: string; sinceDate?: string; minScore?: number; provider?: string } = {}
 ): Promise<GeneratedItem> {
   const chunks = await retrieve(topic, opts);
   if (chunks.length === 0) {

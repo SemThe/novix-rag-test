@@ -102,7 +102,8 @@ npm run ingest
 npm run search -- "het pensioenstelsel"
 npm run search -- "AOW" --source-type encyclopedisch
 
-# 3. Een digest-artifact genereren, gegrond in retrieval (heeft ANTHROPIC_API_KEY nodig)
+# 3. Een digest-artifact genereren, gegrond in retrieval
+#    (gebruikt de provider uit .env — claude of ollama; zie hierboven)
 npm run generate -- "het nieuwe pensioenstelsel"
 npm run generate -- "AOW" --source-type encyclopedisch
 npm run generate -- "pensioenakkoord" --since 2024-01-01
@@ -120,8 +121,20 @@ npm run stats
 ### Voorbeeld: geweigerde generatie
 
 Vraag om een onderwerp waar geen enkele bron over gaat (bv. `npm run generate -- "de
-kredietcrisis van 2008"`) en het systeem weigert te genereren in plaats van iets te
-verzinnen — dat is het punt van verplichte brongrondslag (blueprint advies 6.1).
+beste kattenrassen voor een appartement"`) en het systeem weigert te genereren in plaats
+van iets te verzinnen — dat is het punt van verplichte brongrondslag (blueprint advies
+6.1). Retrieval gebruikt hiervoor een minimale relevantiedrempel (`MIN_RELEVANCE_SCORE`
+in `.env`, standaard 0.2): fragmenten die er wel "toevallig" het minst slecht bijpassen,
+maar feitelijk niet relevant zijn, tellen niet mee.
+
+**Bekende beperking van dit testcorpus:** met slechts een handjevol bronnen (allemaal
+over pensioenen/AOW) kan een onderwerp dat qua taalgebruik aanpalend is — bv. "de
+kredietcrisis van 2008", ook financieel/economisch van aard — soms toch net boven de
+drempel scoren en verkeerd gegronde content opleveren. Dat is een verwacht effect van een
+klein corpus, niet een principiële tekortkoming van de aanpak: met meer en diversere
+bronnen (zoals in een echte backoffice) wordt de scheiding tussen relevant/irrelevant
+vanzelf scherper. Verhoog `MIN_RELEVANCE_SCORE` of voeg meer bronnen toe als dit in de
+praktijk een probleem blijkt.
 
 ## Eigen bronnen toevoegen
 
