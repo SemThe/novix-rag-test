@@ -47,6 +47,29 @@ function looksLikeNonDutch(text: string): boolean {
   return englishScore >= 3 && englishScore > dutchScore;
 }
 
+function extractNumbers(text: string): string[] {
+  // 2-4 cijfers: jaartallen, percentages, aantallen. Losse cijfers (bv. "4 opties") negeren
+  // we bewust, die zijn vrijwel nooit een feitelijke claim uit de bron.
+  return text.match(/\b\d{2,4}\b/g) ?? [];
+}
+
+// Ondanks expliciete instructies ("verzin nooit een getal dat niet letterlijk in de bron
+// staat") bleek het lokale model toch af en toe een plausibel klinkend jaartal te verzinnen
+// (bv. een jaartal bij "de AOW-leeftijd wordt periodiek aangepast", terwijl de bron geen
+// jaartal noemt). Net als bij taal is dit programmatisch afgedwongen, niet alleen via de
+// prompt: elk getal in de output moet letterlijk in de opgehaalde fragmenten voorkomen.
+function containsUnsourcedNumber(value: Record<string, unknown>, chunks: RetrievedChunk[]): boolean {
+  const parts: unknown[] = [value.title, value.oneSentenceSummary, value.body, value.fact, value.question, value.explanation];
+  if (Array.isArray(value.options)) parts.push(...value.options);
+  const contentText = parts.filter((p) => typeof p === "string").join(" ");
+  const contentNumbers = extractNumbers(contentText);
+  if (contentNumbers.length === 0) return false;
+
+  const sourceText = chunks.map((c) => c.text).join(" ");
+  const sourceNumbers = new Set(extractNumbers(sourceText));
+  return contentNumbers.some((n) => !sourceNumbers.has(n));
+}
+
 function isValidResult(opdrachtType: OpdrachtType, value: unknown): value is DigestArtifactResult {
   if (!isNonEmptyRecord(value)) return false;
   if (typeof value.grounded !== "boolean") return false;
@@ -103,6 +126,11 @@ export class OllamaProvider implements LLMProvider {
             "LET OP: je vorige antwoord was (grotendeels) in het Engels. Dat is niet toegestaan. Schrijf dit " +
             "keer de VOLLEDIGE inhoud van elk veld — titel, vraag, opties, toelichting, alles — in vloeiend " +
             "Nederlands, ook al is de brontekst Engelstalig.";
+        } else if (lastError.message.includes("getal dat niet in de bronfragmenten voorkomt")) {
+          correction =
+            "LET OP: je vorige antwoord bevatte een getal (jaartal, percentage of aantal) dat niet letterlijk " +
+            "in de fragmenten staat — dat is verboden, ook als het aannemelijk klinkt. Gebruik dit keer alleen " +
+            "getallen die je letterlijk terugvindt in de brontekst, of kies een feit zonder getal.";
         } else {
           throw lastError; // netwerk-/HTTP-fout: niet retryen
         }
@@ -184,6 +212,10 @@ export class OllamaProvider implements LLMProvider {
 
     if (parsed.grounded !== false && looksLikeNonDutch(extractTextForLanguageCheck(parsed))) {
       throw new Error(`Ollama-output lijkt niet in het Nederlands te zijn: ${JSON.stringify(parsed).slice(0, 300)}`);
+    }
+
+    if (parsed.grounded !== false && containsUnsourcedNumber(parsed, chunks)) {
+      throw new Error(`Ollama-output bevat een getal dat niet in de bronfragmenten voorkomt: ${JSON.stringify(parsed).slice(0, 300)}`);
     }
 
     // Lokale modellen volgen het schema minder strikt dan Claude's tool-calling; citaties
