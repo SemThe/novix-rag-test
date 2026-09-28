@@ -97,15 +97,32 @@ export const OPDRACHT_SPECS: Record<OpdrachtType, OpdrachtSpec> = {
       "aan wijdt — een quizvraag moet één objectief controleerbaar antwoord hebben, geen " +
       "interpretatie. Twijfel je of iets een feit of een interpretatie is: kies een ander, " +
       "harder feit uit dezelfde fragmenten in plaats van de vraag toch te stellen.\n\n" +
+      "1b. GEEN VERZONNEN GETALLEN/DATA — vraag je naar een specifiek jaartal, datum, " +
+      "percentage of aantal, dan moet dat exacte getal LETTERLIJK in de fragmenten staan. " +
+      "Verzin nooit een plausibel klinkend getal dat er niet met zoveel woorden staat, ook al " +
+      "'klinkt' het logisch (bv. een jaartal bij een wetswijziging bedenken omdat de bron alleen " +
+      "zegt dát iets periodiek wordt aangepast, zonder een jaartal te noemen). Staat het exacte " +
+      "getal niet letterlijk in de fragmenten, kies dan een ander feit — zet nooit zelf een " +
+      "getal erbij dat de bron niet geeft.\n\n" +
       "2. STEM (de vraag zelf) moet één concreet, ondubbelzinnig probleem stellen dat je kunt " +
       "beantwoorden zonder de opties te zien. Geen vage formuleringen als 'wat volgt het meest " +
       "logisch uit...' of 'wat is het meest waarschijnlijke gevolg...' — dat soort vragen " +
       "vraagt om een voorspelling of mening, niet om een feit, en heeft bij verhalende bronnen " +
       "vaak geen eenduidig juist antwoord. Vraag in plaats daarvan naar iets dat de bron " +
       "daadwerkelijk als feit stelt.\n\n" +
-      "3. Het JUISTE ANTWOORD moet ondubbelzinnig en verdedigbaar zijn vanuit de fragmenten, " +
+      "3. CONTEXT — een kale vraag met alleen een naam of gebeurtenis ('In welke episode " +
+      "sterft Ygritte?') is voor een lezer die de bron niet kent onbegrijpelijk: die weet niet " +
+      "wie Ygritte is of waarom dat relevant is. Geef daarom altijd kort de nodige context in " +
+      "de vraag zelf (wie iemand is, wat de situatie is), zodat de vraag op zichzelf te snappen " +
+      "is — één korte context-zin is meestal genoeg. HARDE REGEL: het element waar je naar " +
+      "vraagt (het jaartal, de episode, de naam, het aantal — wat er ook in 'correctIndex' als " +
+      "antwoord staat) mag NERGENS in de context-zin zelf al genoemd worden, ook niet " +
+      "terloops. Schrijf de context-zin eerst, en controleer daarna: staat het antwoord dat ik " +
+      "zojuist gekozen heb, letterlijk al in mijn eigen vraagtekst? Zo ja, herschrijf de " +
+      "context-zin zonder dat element.\n\n" +
+      "4. Het JUISTE ANTWOORD moet ondubbelzinnig en verdedigbaar zijn vanuit de fragmenten, " +
       "zonder interpretatieruimte.\n\n" +
-      "4. AFLEIDERS moeten qua vorm, lengte en stijl op elkaar en op het juiste antwoord lijken " +
+      "5. AFLEIDERS moeten qua vorm, lengte en stijl op elkaar en op het juiste antwoord lijken " +
       "(dus niet: drie korte afleiders en één lang correct antwoord, of andersom — dat verklapt " +
       "het antwoord). Ze moeten plausibel klinken voor iemand die de bron niet goed kent, maar " +
       "aantoonbaar onjuist zijn voor wie de bron wel kent. Gebruik bij voorkeur andere concrete " +
@@ -116,9 +133,19 @@ export const OPDRACHT_SPECS: Record<OpdrachtType, OpdrachtSpec> = {
       "symboliseren de dragons voor Daenerys?\" — subjectief, geen objectief juist antwoord.\n" +
       "- Vaag/speculatief: \"Welke situatie volgt het meest logisch uit de gebeurtenissen bij " +
       "Winterfell?\" met opties die allemaal speculatie zijn over een niet-vastgelegde toekomst.\n\n" +
-      "Goede voorbeelden (concreet feit, eenduidig, homogene afleiders):\n" +
-      "- \"In welke episode wordt Ned Stark onthoofd in opdracht van Joffrey?\", met vier " +
-      "episodetitels als opties.\n" +
+      "- Geen context: \"In welke episode sterft Ygritte?\" — begrijpelijk voor wie de bron " +
+      "kent, maar een lezer die niet weet wie Ygritte is, snapt de vraag niet.\n\n" +
+      "- Te veel context (verklapt het antwoord): \"Sansa Stark trouwt in S05E09 met Ramsay " +
+      "Bolton. Welke episode gaat over dit huwelijk?\" — het antwoord (S05E09) staat al " +
+      "letterlijk in de context-zin zelf.\n\n" +
+      "- Verzonnen getal (nooit doen): een vraag over 'in welk jaar de AOW-leeftijd voor het " +
+      "eerst gekoppeld werd aan de levensverwachting' terwijl de bron alleen zegt dát dit " +
+      "gebeurt, zonder jaartal te noemen — een jaartal als '1992' erbij verzinnen is een " +
+      "hallucinatie, ook al klinkt het aannemelijk.\n\n" +
+      "Goede voorbeelden (concreet feit, met context, eenduidig, homogene afleiders):\n" +
+      "- \"Ygritte, een Wildling en de geliefde van Jon Snow, komt om tijdens een gevecht bij " +
+      "de Muur. In welke episode gebeurt dit?\", met vier episodetitels als opties — de vraag " +
+      "legt uit wie Ygritte is zonder te verklappen wélke episode het antwoord is.\n" +
       "- \"Wat is volgens de Wet toekomst pensioenen het belangrijkste verschil in " +
       "premieheffing tussen het oude en het nieuwe pensioenstelsel?\", met opties: A) Premies " +
       "zijn in het nieuwe stelsel leeftijdsonafhankelijk, B) Premies zijn in het nieuwe stelsel " +
@@ -130,7 +157,7 @@ export const OPDRACHT_SPECS: Record<OpdrachtType, OpdrachtSpec> = {
       "Lever een quizvraag aan: een meerkeuzevraag met 4 opties en een toelichting, uitsluitend gebaseerd op de meegegeven brondocumenten.",
     schemaDescription: `{
   "grounded": true,
-  "question": "de vraag — over een concreet feit/gebeurtenis (wie/wat/wanneer/waar/hoeveel), NOOIT over emotie, thema of interpretatie",
+  "question": "de vraag — over een concreet feit/gebeurtenis (wie/wat/wanneer/waar/hoeveel), NOOIT over emotie, thema of interpretatie, MET korte context zodat de vraag zelfstandig te snappen is, ZONDER het antwoord te verklappen",
   "options": ["optie A", "optie B", "optie C", "optie D"],
   "correctIndex": 0,
   "explanation": "korte toelichting waarom dit antwoord klopt, met verwijzing naar de bron"

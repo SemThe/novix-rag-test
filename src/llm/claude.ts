@@ -54,7 +54,10 @@ function buildTool(opdrachtType: OpdrachtType) {
                 "De vraag — over een concreet feit of gebeurtenis (wie/wat/wanneer/waar/hoeveel), niet zomaar " +
                 "letterlijke herkenning van een bronzin, maar OOK NOOIT over emotie, gevoel, thema, symboliek " +
                 "of interpretatie (bv. 'hoe voelt X zich', 'wat symboliseert Y') — dat is subjectief en heeft " +
-                "geen objectief juist antwoord.",
+                "geen objectief juist antwoord. Bevat een korte context-zin (wie/wat iets is) zodat de vraag " +
+                "zelfstandig te begrijpen is voor wie de bron niet kent, maar het antwoord-element zelf " +
+                "(het gevraagde jaartal/episode/naam/aantal) mag nergens in die context-zin al staan. Vraag je " +
+                "naar een specifiek getal/jaartal: dat moet letterlijk in de fragmenten staan, nooit verzonnen.",
             },
             options: { type: "array", items: { type: "string" }, description: "Exact 4 antwoordopties." },
             correctIndex: { type: "integer", description: "Index (0-3) van het juiste antwoord in 'options'." },
