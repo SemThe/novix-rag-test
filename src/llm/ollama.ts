@@ -1,5 +1,6 @@
 import { OLLAMA_BASE_URL, OLLAMA_MODEL } from "../config.js";
 import { BASE_SYSTEM_PROMPT, buildContext, OPDRACHT_SPECS } from "./promptContext.js";
+import { extractNumbers } from "./grounding.js";
 import type { DigestArtifactResult, LLMProvider } from "./types.js";
 import type { OpdrachtType, RetrievedChunk } from "../types.js";
 
@@ -45,12 +46,6 @@ function looksLikeNonDutch(text: string): boolean {
   }
   // Pas afkeuren bij een duidelijk signaal, om korte/neutrale tekst niet vals te flaggen.
   return englishScore >= 3 && englishScore > dutchScore;
-}
-
-function extractNumbers(text: string): string[] {
-  // 2-4 cijfers: jaartallen, percentages, aantallen. Losse cijfers (bv. "4 opties") negeren
-  // we bewust, die zijn vrijwel nooit een feitelijke claim uit de bron.
-  return text.match(/\b\d{2,4}\b/g) ?? [];
 }
 
 // Ondanks expliciete instructies ("verzin nooit een getal dat niet letterlijk in de bron
@@ -167,6 +162,13 @@ export class OllamaProvider implements LLMProvider {
       `Onderwerp: "${topic}"`,
       instructions ? `Extra instructies van de redacteur: ${instructions}` : null,
       `Beschikbare brondocumenten:\n\n${buildContext(chunks)}`,
+      // De schema-instructie staat ook al in de systeemprompt, maar die staat vóór de
+      // (soms lange) brondocumenten. Een lokaal model volgt een instructie vlak vóór het
+      // moet antwoorden betrouwbaarder op dan een die door veel brontekst wordt "overstemd"
+      // — zonder deze herhaling verviel het model soms in het samenvatten/herstructureren
+      // van de hele brontekst in plaats van precies één item volgens het schema te leveren.
+      "Herhaling: geef nu ALLEEN het ene gevraagde JSON-object met exact de velden " +
+        `hierboven beschreven — geen samenvatting, geen lijst, geen andere structuur.\n\n${schemaInstructions(opdrachtType)}`,
     ]
       .filter(Boolean)
       .join("\n\n");

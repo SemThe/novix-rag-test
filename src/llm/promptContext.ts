@@ -114,6 +114,16 @@ export const OPDRACHT_SPECS: Record<OpdrachtType, OpdrachtSpec> = {
       "zegt dát iets periodiek wordt aangepast, zonder een jaartal te noemen). Staat het exacte " +
       "getal niet letterlijk in de fragmenten, kies dan een ander feit — zet nooit zelf een " +
       "getal erbij dat de bron niet geeft.\n\n" +
+      "1c. GEEN VERWISSELDE FEITEN — als een fragment meerdere aparte feiten over " +
+      "verschillende onderwerpen/personen/teams bevat (bv. de titel van club A ÉN apart de " +
+      "titel van club B, of het aantal doelpunten van speler X ÉN apart de titel-count van " +
+      "club Y), koppel dan NOOIT een getal aan een ander onderwerp dan waar het letterlijk " +
+      "bij hoort. Vraag ook nooit naar iets dat je zelf zou moeten afleiden of combineren uit " +
+      "twee aparte zinnen (bv. 'welk team scoorde de meeste doelpunten' wanneer de bron alleen " +
+      "aparte titel-aantallen per team en losse doelpuntenaantallen per SPELER geeft — dat zijn " +
+      "twee verschillende dingen, de bron zegt niet welk team de meeste doelpunten scoorde). " +
+      "Vraag alleen naar een feit dat letterlijk zo, met exact dat getal bij exact dat " +
+      "onderwerp, in één zin van de bron staat.\n\n" +
       "2. STEM (de vraag zelf) moet één concreet, ondubbelzinnig probleem stellen dat je kunt " +
       "beantwoorden zonder de opties te zien. Geen vage formuleringen als 'wat volgt het meest " +
       "logisch uit...' of 'wat is het meest waarschijnlijke gevolg...' — dat soort vragen " +
