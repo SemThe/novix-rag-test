@@ -4,7 +4,8 @@ import { randomUUID } from "node:crypto";
 import { CLAUDE_MODEL, GENERATED_DIR, OLLAMA_MODEL, PROMPT_VERSION } from "./config.js";
 import { retrieve } from "./retrieve.js";
 import { getProvider } from "./llm/index.js";
-import type { GeneratedContent, GeneratedItem, OpdrachtType } from "./types.js";
+import { extractNumbers, findUnsourcedNumbers } from "./llm/grounding.js";
+import type { GeneratedContent, GeneratedItem, OpdrachtType, RetrievedChunk } from "./types.js";
 
 function extractContent(opdrachtType: OpdrachtType, raw: Record<string, unknown>): GeneratedContent {
   if (opdrachtType === "digest-artifact") {
@@ -49,8 +50,17 @@ export async function generateContent(
   // wél meteen definitief: dat is het model dat zelf beoordeelt dat het onderwerp niet
   // door de fragmenten gedekt wordt (of een poging om instructies te laten negeren), en
   // die beoordeling verandert niet door het gewoon nog eens te proberen.
+  // Cijfers (jaartallen vooral) die de gebruiker zelf in het onderwerp noemt, bv. "...in
+  // 2003". Als geen van de daadwerkelijk geciteerde fragmenten dat cijfer bevat, heeft het
+  // model de vraag zeer waarschijnlijk uit eigen kennis beantwoord in plaats van uit de bron
+  // — ook als het wél een (ander, inhoudelijk niet-passend) fragment-ID citeert. Dit is de
+  // programmatische vangnet voor precies dat scenario: een fragment dat het algemene
+  // onderwerp raakt (bv. "voetbal") maar het specifiek gevraagde feit niet dekt.
+  const topicNumbers = extractNumbers([topic, opts.instructions].filter(Boolean).join(" "));
+
   let raw: Awaited<ReturnType<typeof provider.generate>> | undefined;
   let validCitationIds: string[] = [];
+  let unsourcedTopicNumbers: string[] = [];
   for (let attempt = 1; attempt <= 2; attempt++) {
     try {
       raw = await provider.generate(opdrachtType, topic, opts.instructions, chunks);
@@ -70,10 +80,23 @@ export async function generateContent(
       );
     }
     validCitationIds = (raw.citations ?? []).filter((id) => retrievedIds.has(id));
-    if (validCitationIds.length > 0) break;
+    if (validCitationIds.length === 0) continue;
+
+    const citedChunks: RetrievedChunk[] = chunks.filter((c) => validCitationIds.includes(c.id));
+    unsourcedTopicNumbers = topicNumbers.length > 0 ? findUnsourcedNumbers(topicNumbers, citedChunks) : [];
+    if (unsourcedTopicNumbers.length === 0) break;
+    validCitationIds = []; // dit resultaat niet accepteren — mogelijk nog een poging over
   }
 
   if (!raw || validCitationIds.length === 0) {
+    if (unsourcedTopicNumbers.length > 0) {
+      throw new Error(
+        `Generatie geweigerd: het onderwerp verwijst naar ${unsourcedTopicNumbers.join(", ")}, maar de door het ` +
+          "model geciteerde fragmenten noemen dat niet — vermoedelijk is dit beantwoord uit eigen kennis van het " +
+          "model in plaats van uit de bron. Het systeem genereert nooit zonder verifieerbare brongrondslag voor " +
+          "het specifiek gevraagde feit (blueprint advies 6.1)."
+      );
+    }
     throw new Error(
       "Generatie geweigerd: het model gaf geen citaties die terug te herleiden zijn naar de opgehaalde fragmenten " +
         "(mogelijk gehallucineerd). Geen output zonder verifieerbare bronvermelding."
