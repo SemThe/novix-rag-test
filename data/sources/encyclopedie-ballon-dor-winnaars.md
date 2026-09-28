@@ -1,5 +1,5 @@
 ---
-title: "Winnaars van de Ballon d'Or (mannen, 2009-2025)"
+title: "Winnaars van de Ballon d'Or (mannen, 1990-2025)"
 type: encyclopedisch
 publicationDate: "2026-09-28"
 trustLevel: hoog
@@ -7,29 +7,66 @@ licenseStatus: parafraseren-toegestaan
 ---
 
 De Ballon d'Or ("Gouden Bal") is de jaarlijkse prijs van het Franse tijdschrift France
-Football voor de beste voetballer van het jaar, uitgereikt sinds 1956. Sinds de fusie met
-de FIFA-wereldspeler-van-het-jaar-verkiezing in 2010 (met een korte terugtrekking van FIFA
-vanaf 2016) geldt de Ballon d'Or als de meest prestigieuze individuele onderscheiding in
-het voetbal.
+Football voor de beste voetballer van het jaar, uitgereikt sinds 1956. Van 2010 tot en met
+2015 was de prijs tijdelijk samengevoegd met de FIFA-wereldspeler-van-het-jaar-verkiezing
+tot de "FIFA Ballon d'Or"; sinds 2016 gaat het weer om de zelfstandige France
+Football-prijs. In 2020 werd de prijs niet uitgereikt vanwege de verstoring van het
+voetbalseizoen door de coronapandemie.
 
-Lionel Messi (Argentinië) is met acht Ballon d'Or-prijzen de meest bekroonde speler in de
-geschiedenis van de prijs. Zijn winnende jaren zijn 2009, 2010, 2011, 2012, 2015, 2019,
-2021 en 2023 — waaronder een reeks van vier titels op rij tussen 2009 en 2012. Zijn achtste
-Ballon d'Or in 2023 volgde direct op het winnen van het WK 2022 met Argentinië, waarbij
-Messi zelf ook de Golden Ball (beste speler van het toernooi) won. Cristiano Ronaldo
-(Portugal) staat op de tweede plaats met vijf Ballon d'Or-prijzen.
+Overzicht van alle winnaars vanaf 1990:
 
-Winnaars van de mannen-Ballon d'Or in de meest recente jaren:
-- 2021: Lionel Messi (Argentinië, Paris Saint-Germain).
+- 1990: Lothar Matthäus (Duitsland).
+- 1991: Jean-Pierre Papin (Frankrijk).
+- 1992: Marco van Basten (Nederland).
+- 1993: Roberto Baggio (Italië).
+- 1994: Hristo Stoichkov (Bulgarije).
+- 1995: George Weah (Liberia).
+- 1996: Matthias Sammer (Duitsland).
+- 1997: Ronaldo (Brazilië) — de Braziliaanse Ronaldo, niet te verwarren met de latere
+  winnaar Cristiano Ronaldo.
+- 1998: Zinédine Zidane (Frankrijk).
+- 1999: Rivaldo (Brazilië).
+- 2000: Luís Figo (Portugal).
+- 2001: Michael Owen (Engeland).
+- 2002: Ronaldo (Brazilië), zijn tweede Ballon d'Or.
+- 2003: Pavel Nedvěd (Tsjechië).
+- 2004: Andriy Sjevtsjenko (Oekraïne).
+- 2005: Ronaldinho (Brazilië).
+- 2006: Fabio Cannavaro (Italië) — tot nu toe de enige verdediger die de Ballon d'Or won
+  sinds Matthias Sammer in 1996.
+- 2007: Kaká (Brazilië).
+- 2008: Cristiano Ronaldo (Portugal), zijn eerste Ballon d'Or.
+- 2009: Lionel Messi (Argentinië), zijn eerste Ballon d'Or.
+- 2010: Lionel Messi (Argentinië), zijn tweede Ballon d'Or.
+- 2011: Lionel Messi (Argentinië), zijn derde Ballon d'Or.
+- 2012: Lionel Messi (Argentinië), zijn vierde Ballon d'Or op rij.
+- 2013: Cristiano Ronaldo (Portugal), zijn tweede Ballon d'Or.
+- 2014: Cristiano Ronaldo (Portugal), zijn derde Ballon d'Or.
+- 2015: Lionel Messi (Argentinië), zijn vijfde Ballon d'Or.
+- 2016: Cristiano Ronaldo (Portugal), zijn vierde Ballon d'Or.
+- 2017: Cristiano Ronaldo (Portugal), zijn vijfde en laatste Ballon d'Or.
+- 2018: Luka Modrić (Kroatië) — brak de reeks van Messi en Ronaldo, die vanaf 2008 elke
+  editie onderling hadden verdeeld.
+- 2019: Lionel Messi (Argentinië), zijn zesde Ballon d'Or.
+- 2020: niet uitgereikt.
+- 2021: Lionel Messi (Argentinië, Paris Saint-Germain), zijn zevende Ballon d'Or.
 - 2022: Karim Benzema (Frankrijk, Real Madrid).
-- 2023: Lionel Messi (Argentinië, Inter Miami), zijn achtste en meest recente Ballon d'Or.
+- 2023: Lionel Messi (Argentinië, Inter Miami), zijn achtste en meest recente Ballon d'Or,
+  volgend op het winnen van het WK 2022 met Argentinië.
 - 2024: Rodri (Spanje, Manchester City).
 - 2025: Ousmane Dembélé (Frankrijk, Paris Saint-Germain).
 
-Naast de hoofdprijs worden bij de Ballon d'Or-ceremonie ook andere onderscheidingen
-uitgereikt. De Ballon d'Or Féminin (vrouwen) werd in 2023, 2024 en 2025 alle drie de keren
-gewonnen door Aitana Bonmatí (Spanje, FC Barcelona). De Yashin Trophy voor beste doelman
-werd in 2023 en 2024 gewonnen door Emiliano Martínez (Argentinië, Aston Villa) en in 2025
-door Gianluigi Donnarumma (Italië, Paris Saint-Germain). De Kopa Trophy voor de beste
-jonge speler (onder de 21 jaar) ging in 2023 naar Jude Bellingham (Engeland, Borussia
-Dortmund) en in zowel 2024 als 2025 naar Lamine Yamal (Spanje, FC Barcelona).
+Lionel Messi is met acht Ballon d'Or-prijzen de meest bekroonde speler in de geschiedenis
+van de prijs, waaronder een reeks van vier titels op rij tussen 2009 en 2012. Cristiano
+Ronaldo staat op de tweede plaats met vijf Ballon d'Or-prijzen. Tussen 2008 en 2017 wonnen
+alleen Messi en Ronaldo de prijs (tien edities op rij), tot Luka Modrić die reeks in 2018
+doorbrak.
+
+Naast de hoofdprijs worden sinds 2018 bij de Ballon d'Or-ceremonie ook andere
+onderscheidingen uitgereikt. De Ballon d'Or Féminin (vrouwen) werd in 2023, 2024 en 2025
+alle drie de keren gewonnen door Aitana Bonmatí (Spanje, FC Barcelona). De Yashin Trophy
+voor beste doelman werd in 2023 en 2024 gewonnen door Emiliano Martínez (Argentinië,
+Aston Villa) en in 2025 door Gianluigi Donnarumma (Italië, Paris Saint-Germain). De Kopa
+Trophy voor de beste jonge speler (onder de 21 jaar) ging in 2023 naar Jude Bellingham
+(Engeland, Borussia Dortmund) en in zowel 2024 als 2025 naar Lamine Yamal (Spanje, FC
+Barcelona).
