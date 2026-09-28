@@ -10,41 +10,68 @@ Het FIFA Wereldkampioenschap voetbal wordt sinds 1930 gehouden, met uitzondering
 1942 en 1946 (niet gehouden vanwege de Tweede Wereldoorlog). Er zijn in totaal 23
 edities gespeeld, van Uruguay 1930 tot Canada/Mexico/VS 2026.
 
-Overzicht van alle winnaars, gastland en de verliezende finalist:
+Overzicht van alle winnaars, gastland en de verliezende finalist. Elke editie hieronder
+staat op zichzelf; gebruik voor een vraag over één specifiek jaar alleen de regel van dat
+jaar.
 
-- 1930, Uruguay: winnaar Uruguay, finale gewonnen van Argentinië (4-2).
-- 1934, Italië: winnaar Italië, finale gewonnen van Tsjecho-Slowakije (2-1 na verlenging).
-- 1938, Frankrijk: winnaar Italië, finale gewonnen van Hongarije (4-2).
-- 1950, Brazilië: winnaar Uruguay, versloeg gastland Brazilië in de laatste groepswedstrijd
-  die als finale gold (2-1) — bekend in Brazilië als de "Maracanazo".
-- 1954, Zwitserland: winnaar West-Duitsland, finale gewonnen van Hongarije (3-2), bekend
-  als het "Wonder van Bern".
-- 1958, Zweden: winnaar Brazilië, finale gewonnen van gastland Zweden (5-2).
-- 1962, Chili: winnaar Brazilië, finale gewonnen van Tsjecho-Slowakije (3-1).
-- 1966, Engeland: winnaar Engeland, finale gewonnen van West-Duitsland (4-2 na verlenging).
-- 1970, Mexico: winnaar Brazilië, finale gewonnen van Italië (4-1).
-- 1974, West-Duitsland: winnaar West-Duitsland, finale gewonnen van Nederland (2-1).
-- 1978, Argentinië: winnaar Argentinië, finale gewonnen van Nederland (3-1 na verlenging).
-- 1982, Spanje: winnaar Italië, finale gewonnen van West-Duitsland (3-1).
-- 1986, Mexico: winnaar Argentinië, finale gewonnen van West-Duitsland (3-2).
-- 1990, Italië: winnaar West-Duitsland, finale gewonnen van Argentinië (1-0).
-- 1994, Verenigde Staten: winnaar Brazilië, na 0-0 in de finale gewonnen van Italië na
-  strafschoppen (3-2).
-- 1998, Frankrijk: winnaar Frankrijk, finale gewonnen van Brazilië (3-0).
-- 2002, Japan/Zuid-Korea: winnaar Brazilië, finale gewonnen van Duitsland (2-0).
-- 2006, Duitsland: winnaar Italië, na 1-1 in de finale gewonnen van Frankrijk na
+- WK 1930, Uruguay: winnaar Uruguay, finale gewonnen van Argentinië (4-2).
+
+- WK 1934, Italië: winnaar Italië, finale gewonnen van Tsjecho-Slowakije (2-1 na verlenging).
+
+- WK 1938, Frankrijk: winnaar Italië, finale gewonnen van Hongarije (4-2).
+
+- WK 1950, Brazilië: winnaar Uruguay, versloeg gastland Brazilië in de laatste
+  groepswedstrijd die als finale gold (2-1) — bekend in Brazilië als de "Maracanazo".
+
+- WK 1954, Zwitserland: winnaar West-Duitsland, finale gewonnen van Hongarije (3-2),
+  bekend als het "Wonder van Bern".
+
+- WK 1958, Zweden: winnaar Brazilië, finale gewonnen van gastland Zweden (5-2).
+
+- WK 1962, Chili: winnaar Brazilië, finale gewonnen van Tsjecho-Slowakije (3-1).
+
+- WK 1966, Engeland: winnaar Engeland, finale gewonnen van West-Duitsland (4-2 na
+  verlenging).
+
+- WK 1970, Mexico: winnaar Brazilië, finale gewonnen van Italië (4-1).
+
+- WK 1974, West-Duitsland: winnaar West-Duitsland, finale gewonnen van Nederland (2-1).
+
+- WK 1978, Argentinië: winnaar Argentinië, finale gewonnen van Nederland (3-1 na
+  verlenging).
+
+- WK 1982, Spanje: winnaar Italië, finale gewonnen van West-Duitsland (3-1).
+
+- WK 1986, Mexico: winnaar Argentinië, finale gewonnen van West-Duitsland (3-2).
+
+- WK 1990, Italië: winnaar West-Duitsland, finale gewonnen van Argentinië (1-0).
+
+- WK 1994, Verenigde Staten: winnaar Brazilië, na 0-0 in de finale gewonnen van Italië
+  na strafschoppen (3-2).
+
+- WK 1998, Frankrijk: winnaar Frankrijk, finale gewonnen van Brazilië (3-0).
+
+- WK 2002, Japan/Zuid-Korea: winnaar Brazilië, finale gewonnen van Duitsland (2-0).
+
+- WK 2006, Duitsland: winnaar Italië, na 1-1 in de finale gewonnen van Frankrijk na
   strafschoppen (5-3).
-- 2010, Zuid-Afrika: winnaar Spanje, finale gewonnen van Nederland (1-0 na verlenging) —
-  de eerste wereldtitel voor Spanje.
-- 2014, Brazilië: winnaar Duitsland, finale gewonnen van Argentinië (1-0 na verlenging).
-- 2018, Rusland: winnaar Frankrijk, finale gewonnen van Kroatië (4-2).
-- 2022, Qatar: winnaar Argentinië, na 3-3 in de finale gewonnen van Frankrijk na
+
+- WK 2010, Zuid-Afrika: winnaar Spanje, finale gewonnen van Nederland (1-0 na
+  verlenging) — de eerste wereldtitel voor Spanje.
+
+- WK 2014, Brazilië: winnaar Duitsland, finale gewonnen van Argentinië (1-0 na
+  verlenging).
+
+- WK 2018, Rusland: winnaar Frankrijk, finale gewonnen van Kroatië (4-2).
+
+- WK 2022, Qatar: winnaar Argentinië, na 3-3 in de finale gewonnen van Frankrijk na
   strafschoppen (4-2).
-- 2026, Canada/Mexico/Verenigde Staten: winnaar Spanje, finale gewonnen van Argentinië
-  (1-0 na verlenging) — Spanje's tweede wereldtitel, na 2010. De winnende treffer kwam
-  van Ferran Torres in de 106e minuut. Argentinië speelde het laatste deel van de
-  verlenging met tien man na een rode kaart voor Enzo Fernández (tweede gele kaart) diep
-  in de blessuretijd van de reguliere speeltijd.
+
+- WK 2026, Canada/Mexico/Verenigde Staten: winnaar Spanje, finale gewonnen van
+  Argentinië (1-0 na verlenging) — Spanje's tweede wereldtitel, na 2010. De winnende
+  treffer kwam van Ferran Torres in de 106e minuut. Argentinië speelde het laatste deel
+  van de verlenging met tien man na een rode kaart voor Enzo Fernández (tweede gele
+  kaart) diep in de blessuretijd van de reguliere speeltijd.
 
 Landen met de meeste wereldtitels: Brazilië leidt met vijf titels (1958, 1962, 1970, 1994,
 2002), gevolgd door Duitsland en Italië met elk vier titels, Argentinië met drie titels

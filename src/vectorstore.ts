@@ -45,7 +45,12 @@ export class VectorStore {
     queryEmbedding: number[],
     opts: { topK?: number; sourceType?: string; sinceDate?: string; minScore?: number } = {}
   ): RetrievedChunk[] {
-    const { topK = 5, sourceType, sinceDate, minScore = MIN_RELEVANCE_SCORE } = opts;
+    // Lager dan het vroegere default van 5: minder (maar relevantere) fragmenten in de
+    // prompt betekent een kortere generatietijd én minder kans dat het lokale model
+    // fragmenten door elkaar haalt wanneer meerdere onderwerpen los van elkaar in de
+    // opgehaalde pool zitten (zie ook de per-fragment jaartal-structuur van de
+    // voetbalbronnen, bedoeld om dit verder te beperken).
+    const { topK = 3, sourceType, sinceDate, minScore = MIN_RELEVANCE_SCORE } = opts;
     const now = new Date();
 
     const candidates = this.chunks.filter((c) => {
