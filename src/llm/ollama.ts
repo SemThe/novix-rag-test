@@ -109,10 +109,17 @@ export class OllamaProvider implements LLMProvider {
   ): Promise<DigestArtifactResult> {
     let lastError: Error | undefined;
     let correction: string | undefined;
+    // Alleen escaleren bij het taalprobleem: daar herhaalt het model bij lage temperature
+    // soms haast letterlijk dezelfde foute (Engelse) output, dus dwingt hogere temperature
+    // een echt andere poging af. Bij een schema-/JSON-formatfout is dat averechts: een hogere
+    // temperature maakt de output juist onvoorspelbaarder, terwijl je daar juist een zo
+    // voorspelbaar mogelijke, strikt geformatteerde JSON-output wilt — dus die retry blijft
+    // op de lage basis-temperature.
+    let escalateTemperature = false;
 
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
       try {
-        return await this.attemptOnce(opdrachtType, topic, instructions, chunks, correction, attempt);
+        return await this.attemptOnce(opdrachtType, topic, instructions, chunks, correction, escalateTemperature, attempt);
       } catch (err) {
         lastError = err as Error;
         // Alleen retrien op een format-fout van het lokale model (ongeldige JSON, schema-
@@ -121,16 +128,19 @@ export class OllamaProvider implements LLMProvider {
           correction =
             "LET OP: je vorige antwoord voldeed niet aan het gevraagde JSON-schema (verplicht veld ontbrak of " +
             "had het verkeerde type). Lever nu een antwoord dat EXACT aan het schema voldoet.";
+          escalateTemperature = false;
         } else if (lastError.message.includes("lijkt niet in het Nederlands")) {
           correction =
             "LET OP: je vorige antwoord was (grotendeels) in het Engels. Dat is niet toegestaan. Schrijf dit " +
             "keer de VOLLEDIGE inhoud van elk veld — titel, vraag, opties, toelichting, alles — in vloeiend " +
             "Nederlands, ook al is de brontekst Engelstalig.";
+          escalateTemperature = true;
         } else if (lastError.message.includes("getal dat niet in de bronfragmenten voorkomt")) {
           correction =
             "LET OP: je vorige antwoord bevatte een getal (jaartal, percentage of aantal) dat niet letterlijk " +
             "in de fragmenten staat — dat is verboden, ook als het aannemelijk klinkt. Gebruik dit keer alleen " +
             "getallen die je letterlijk terugvindt in de brontekst, of kies een feit zonder getal.";
+          escalateTemperature = false;
         } else {
           throw lastError; // netwerk-/HTTP-fout: niet retryen
         }
@@ -146,6 +156,7 @@ export class OllamaProvider implements LLMProvider {
     instructions: string | undefined,
     chunks: RetrievedChunk[],
     correction: string | undefined,
+    escalateTemperature: boolean,
     attempt: number
   ): Promise<DigestArtifactResult> {
     const spec = OPDRACHT_SPECS[opdrachtType];
@@ -171,10 +182,11 @@ export class OllamaProvider implements LLMProvider {
         // chunk-id's letterlijk correct moeten zijn, geen vrije creatieve tekst. Te hoge
         // temperature liet het model af en toe een net verkeerd chunk-id citeren of het
         // schema niet volgen, wat de generatie onnodig liet mislukken op verificatie in
-        // plaats van op inhoud. Bij een retry (correction is dan gezet) juist iets hoger dan
-        // de eerste poging: bij 0.4 herhaalt het model anders soms haast letterlijk dezelfde
-        // (foute) output, wat een retry zinloos maakt.
-        options: { temperature: correction ? 0.4 + 0.15 * attempt : 0.4 },
+        // plaats van op inhoud. Escaleren gebeurt alleen wanneer de vorige poging faalde op
+        // het taalprobleem (zie generate() hierboven) — voor een schema-/JSON-fout blijft de
+        // temperature juist laag, om de kans op een strikt correct geformatteerd antwoord te
+        // maximaliseren in plaats van te verlagen.
+        options: { temperature: escalateTemperature ? 0.4 + 0.15 * attempt : 0.4 },
         messages: [
           { role: "system", content: `${BASE_SYSTEM_PROMPT}\n\n${schemaInstructions(opdrachtType)}` },
           { role: "user", content: userPrompt },
