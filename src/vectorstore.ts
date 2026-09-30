@@ -45,12 +45,18 @@ export class VectorStore {
     queryEmbedding: number[],
     opts: { topK?: number; sourceType?: string; sinceDate?: string; minScore?: number } = {}
   ): RetrievedChunk[] {
-    // Lager dan het vroegere default van 5: minder (maar relevantere) fragmenten in de
-    // prompt betekent een kortere generatietijd én minder kans dat het lokale model
-    // fragmenten door elkaar haalt wanneer meerdere onderwerpen los van elkaar in de
-    // opgehaalde pool zitten (zie ook de per-fragment jaartal-structuur van de
-    // voetbalbronnen, bedoeld om dit verder te beperken).
-    const { topK = 3, sourceType, sinceDate, minScore = MIN_RELEVANCE_SCORE } = opts;
+    // Minder (maar relevantere) fragmenten in de prompt betekent een kortere generatietijd
+    // én, belangrijker, houdt het lokale model gefocust: bij een test met topK=20 verloor
+    // het model de daadwerkelijk gestelde vraag soms volledig uit het oog (het verzon een
+    // andere vraag over een ander jaar dat ook in de pool zat, en citeerde zelfs een niet-
+    // bestaand fragment-ID) — te veel concurrerende feiten in de context werkt averechts,
+    // ook al is de totale tekstgrootte klein. De bronnen zijn daarom herschreven zodat elk
+    // fragment met de vraagvorm begint (bv. "Wie won de Ballon d'Or in 1997?"), wat de
+    // ranking van het juiste fragment sterk verbetert — maar als bijeffect scoren nu ook
+    // ALLE andere jaren van dezelfde bron hoog (ze delen dezelfde vraagvorm), waardoor het
+    // ene specifieke jaar soms nét op rang 6-8 valt in plaats van de top 5. topK=8 vangt die
+    // marge op zonder terug te vallen in het "te veel fragmenten"-probleem van topK=20.
+    const { topK = 8, sourceType, sinceDate, minScore = MIN_RELEVANCE_SCORE } = opts;
     const now = new Date();
 
     const candidates = this.chunks.filter((c) => {
