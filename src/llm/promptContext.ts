@@ -148,6 +148,9 @@ export const OPDRACHT_SPECS: Record<OpdrachtType, OpdrachtSpec> = {
       "aantoonbaar onjuist zijn voor wie de bron wel kent. Gebruik bij voorkeur andere concrete " +
       "elementen uit dezelfde fragmenten als afleider-materiaal (bv. een ander personage, een " +
       "ander jaartal, een andere gebeurtenis), niet iets volledig verzonnens.\n\n" +
+      "5b. Geeft de bron een ranglijst (top 5, halve finalisten)? Gebruik dan drie ANDERE " +
+      "namen uit diezelfde ranglijst van datzelfde jaar als afleiders, elk als losse naam — " +
+      "niet een naam uit een ander jaar, en niet een samengestelde lijst als optie.\n\n" +
       "Slechte voorbeelden (vermijd dit type vraag):\n" +
       "- Emotie/interpretatie: \"Hoe voelt Sansa zich over haar huwelijk met Ramsay?\" of \"Wat " +
       "symboliseren de dragons voor Daenerys?\" — subjectief, geen objectief juist antwoord.\n" +
